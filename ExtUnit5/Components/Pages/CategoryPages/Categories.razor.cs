@@ -4,40 +4,45 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
-namespace ExtUnit5.Components.Pages
+namespace ExtUnit5.Components.Pages.CategoryPages
 {
-    public partial class Products : ComponentBase
+    public partial class Categories : ComponentBase
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        public List<Product> AllProducts { get; set; } = new List<Product>();
+        public List<Category> AllCategories { get; set; } = new List<Category>();
 
         protected override Task OnInitializedAsync()
         {
             using (var context = DbContextFactory.CreateDbContext())
             {
-                AllProducts = context.Products.ToList();
+                AllCategories = context.Categories.ToList();
             }
             return base.OnInitializedAsync();
         }
 
         private void Edit(int id)
         {
-            NavigationManager.NavigateTo($"/edit-productid-{id}");
+            NavigationManager.NavigateTo($"/edit-categoryid-{id}");
         }
 
         private async Task Delete(int id)
         {
             using (var context = DbContextFactory.CreateDbContext())
             {
-                var productToDelete = context.Products.SingleOrDefault(p => p.Id == id);
-                if (productToDelete != null)
+                var categoryToDelete = context.Categories.SingleOrDefault(c => c.Id == id);
+                if (categoryToDelete != null)
                 {
-                    context.Products.Remove(productToDelete);
+                    context.Categories.Remove(categoryToDelete);
                 }
                 await context.SaveChangesAsync();
             }
-            AllProducts = AllProducts.Where(p => p.Id != id).ToList();
+            AllCategories = AllCategories.Where(c => c.Id != id).ToList();
+        }
+
+        private void RedirectToAddCategory()
+        {
+            NavigationManager.NavigateTo($"/addcategory");
         }
     }
 }

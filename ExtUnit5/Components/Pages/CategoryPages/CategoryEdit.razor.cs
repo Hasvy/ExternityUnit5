@@ -3,29 +3,25 @@ using ExtUnit5.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 
-namespace ExtUnit5.Components.Pages
+namespace ExtUnit5.Components.Pages.CategoryPages
 {
-    public partial class ProductEdit : ComponentBase
+    public partial class CategoryEdit : ComponentBase
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
 
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
 
-        [Parameter] public string? ProductId { get; set; }
+        [Parameter] public string? CategoryId { get; set; }
 
-        private Product productToEdit = new Product();
+        private Category categoryToEdit = new Category();
 
         protected override async Task OnParametersSetAsync()
         {
-            if (int.TryParse(ProductId, out int productId))
+            if (int.TryParse(CategoryId, out int categoryId))
             {
                 using (var context = DbContextFactory.CreateDbContext())
                 {
-                    productToEdit = await context.Products.FindAsync(productId);
-                    //if (product is not null)
-                    //{
-                    //    ProductToEdit = product;
-                    //}
+                    categoryToEdit = await context.Categories.FindAsync(categoryId);
                 }
                 await base.OnParametersSetAsync();
             }
@@ -35,12 +31,11 @@ namespace ExtUnit5.Components.Pages
         {
             using (var context = DbContextFactory.CreateDbContext())
             {
-                //context.Products.Add(ProductToEdit);
-                context.Products.Update(productToEdit);
+                context.Categories.Update(categoryToEdit);
                 await context.SaveChangesAsync();
             }
 
-            NavigationManager.NavigateTo("/products");
+            NavigationManager.NavigateTo("/categories");
         }
     }
 }

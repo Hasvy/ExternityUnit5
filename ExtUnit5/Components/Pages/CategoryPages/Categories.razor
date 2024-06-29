@@ -1,27 +1,39 @@
-﻿@page "/products"
+﻿@page "/categories"
 @rendermode InteractiveServer
 
-<h3>Products</h3>
+<h3>Categories</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+
+        </div>
+        <div class="col-sm">
+
+        </div>
+        <div class="col-sm d-flex justify-content-end">
+            <button class="btn btn-primary" @onclick="RedirectToAddCategory">Nová Kategorie</button>
+        </div>
+    </div>
+</div>
 
 <table class="table table-hover">
     <thead>
         <tr>
             <th scope="col">Id</th>
             <th scope="col">Název</th>
-            <th scope="col">Cena</th>
-            <th scope="col" style="width:200px">Počet skladem</th>
-            <th scope="col" style="width:10px"></th>
-            <th scope="col" style="width:10px"></th>
+            <th scope="col">Description</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in AllProducts)
+        @foreach (var item in AllCategories)
         {
             <tr>
                 <td>@item.Id</td>
                 <td>@item.Name</td>
-                <td>@item.Price</td>
-                <td>@item.Stock</td>
+                <td>@item.Description</td>
                 <td>
                     <button class="btn btn-primary" @onclick="@(() => Edit(item.Id))">Editovat</button>
                 </td>
