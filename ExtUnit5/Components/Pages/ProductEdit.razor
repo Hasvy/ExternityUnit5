@@ -1,0 +1,50 @@
+﻿@using Entities
+@using System.ComponentModel.DataAnnotations
+
+@page "/edit-productid-{ProductId}"
+@rendermode InteractiveServer
+
+<h3>ProductEdit</h3>
+
+<EditForm FormName="EditProduct" Model="@productToEdit" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="name">Název</label>
+        <InputText id="name" class="form-control" @bind-Value="productToEdit.Name" />
+        <ValidationMessage For="@(() => productToEdit.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="description">Popis</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="productToEdit.Description" />
+        <ValidationMessage For="@(() => productToEdit.Description)" />
+    </div>
+
+    <div class="form-group">
+        <label for="price">Cena</label>
+        <InputNumber id="price" class="form-control" @bind-Value="productToEdit.Price" />
+        <ValidationMessage For="@(() => productToEdit.Price)" />
+    </div>
+
+    <div class="form-group">
+        <label for="stock">Počet skladem</label>
+        <InputNumber id="stock" class="form-control" @bind-Value="productToEdit.Stock" />
+        <ValidationMessage For="@(() => productToEdit.Stock)" />
+    </div>
+
+    <div class="form-group">
+        <label for="isActive">Status:</label>
+        @if (productToEdit.IsActive)
+        {
+            <span class="badge bg-success">Aktivní</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Neaktivní</span>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Uložit</button>
+
+</EditForm>
