@@ -24,6 +24,7 @@ namespace ExtUnit5.Entities
         [Required(ErrorMessage = "Cena je povinná")]
         public float Price { get; set; } = 0f;
 
+
         [AllowNull]
         [Range(0, int.MaxValue, ErrorMessage = "Počet skladem musí být nezáporné číslo")]
         public int Stock { get; set; } = 0;
