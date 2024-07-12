@@ -27,7 +27,7 @@ namespace ExtUnit5.Components.Pages.ProductPages
 
         private async Task DeleteProduct(Product product)
         {
-            AppDbContext.Remove(product);
+            AppDbContext.Products.Remove(product);
             await AppDbContext.SaveChangesAsync();
             AllProducts.Remove(product);
         }

@@ -10,14 +10,13 @@ namespace ExtUnit5.Components.Pages.CategoryPages
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        public List<Category> AllCategories { get; set; } = new List<Category>();
+        private List<Category> AllCategories { get; set; } = new List<Category>();
+        private AppDbContext AppDbContext { get; set; } = null!;
 
         protected override Task OnInitializedAsync()
         {
-            using (var context = DbContextFactory.CreateDbContext())
-            {
-                AllCategories = context.Categories.ToList();
-            }
+            AppDbContext = DbContextFactory.CreateDbContext();
+            AllCategories = AppDbContext.Categories.ToList();
             return base.OnInitializedAsync();
         }
 
@@ -26,18 +25,11 @@ namespace ExtUnit5.Components.Pages.CategoryPages
             NavigationManager.NavigateTo($"/edit-categoryid-{id}");
         }
 
-        private async Task Delete(int id)
+        private async Task Delete(Category category)
         {
-            using (var context = DbContextFactory.CreateDbContext())
-            {
-                var categoryToDelete = context.Categories.SingleOrDefault(c => c.Id == id);
-                if (categoryToDelete != null)
-                {
-                    context.Categories.Remove(categoryToDelete);
-                }
-                await context.SaveChangesAsync();
-            }
-            AllCategories = AllCategories.Where(c => c.Id != id).ToList();
+            AppDbContext.Categories.Remove(category);
+            await AppDbContext.SaveChangesAsync();
+            AllCategories.Remove(category);
         }
 
         private void RedirectToAddCategory()
