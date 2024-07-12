@@ -6,43 +6,35 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ExtUnit5.Components.Pages.ProductPages
 {
-    public partial class Products : ComponentBase
+    public partial class Products : ComponentBase, IDisposable
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        public List<Product> AllProducts { get; set; } = new List<Product>();
+        private List<Product> AllProducts { get; set; } = new List<Product>();
+        private AppDbContext AppDbContext { get; set; } = null!;
 
         protected override Task OnInitializedAsync()
         {
-            using (var context = DbContextFactory.CreateDbContext())
-            {
-                AllProducts = context.Products.ToList();
-            }
+            AppDbContext = DbContextFactory.CreateDbContext();
+            AllProducts = AppDbContext.Products.ToList();
             return base.OnInitializedAsync();
         }
 
-        private void Edit(int id)
+        private void RedirectToEdit(int id)
         {
             NavigationManager.NavigateTo($"/edit-productid-{id}");
         }
 
-        private async Task Delete(int id)
+        private async Task DeleteProduct(Product product)
         {
-            using (var context = DbContextFactory.CreateDbContext())
-            {
-                var productToDelete = context.Products.SingleOrDefault(p => p.Id == id);
-                if (productToDelete != null)
-                {
-                    context.Products.Remove(productToDelete);
-                }
-                await context.SaveChangesAsync();
-            }
-            AllProducts = AllProducts.Where(p => p.Id != id).ToList();
+            AppDbContext.Remove(product);
+            await AppDbContext.SaveChangesAsync();
+            AllProducts.Remove(product);
         }
 
-        private void RedirectToAddProduct()
+        public void Dispose()
         {
-            NavigationManager.NavigateTo($"/addproduct");
+            AppDbContext.Dispose();
         }
     }
 }

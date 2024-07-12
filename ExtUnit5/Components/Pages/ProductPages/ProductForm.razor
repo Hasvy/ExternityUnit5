@@ -1,0 +1,57 @@
+﻿@using Entities
+@using System.ComponentModel.DataAnnotations
+@rendermode InteractiveServer
+
+<EditForm FormName="@FormName" Model="@product" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="name">Název</label>
+        <InputText id="name" class="form-control" @bind-Value="product.Name" />
+        <ValidationMessage For="@(() => product.Name)" />
+    </div>
+
+    <div class="form-group">
+        <label for="category">Kategorie</label>
+        <InputSelect id="category" @bind-Value="selectedCategoryId">
+            @foreach (Category category in allCategories)
+            {
+                <option value="@category.Id">@category.Name</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => product.Category)" />
+    </div>
+
+    <div class="form-group">
+        <label for="description">Popis</label>
+        <InputTextArea id="description" class="form-control" @bind-Value="product.Description" />
+        <ValidationMessage For="@(() => product.Description)" />
+    </div>
+
+    <div class="form-group">
+        <label for="price">Cena</label>
+        <InputNumber id="price" class="form-control" @bind-Value="product.Price" />
+        <ValidationMessage For="@(() => product.Price)" />
+    </div>
+
+    <div class="form-group">
+        <label for="stock">Počet skladem</label>
+        <InputNumber id="stock" class="form-control" @bind-Value="product.Stock" />
+        <ValidationMessage For="@(() => product.Stock)" />
+    </div>
+
+    <div class="form-group">
+        <label for="isActive">Status:</label>
+        @if (product.IsActive)
+        {
+            <span class="badge bg-success">Aktivní</span>
+        }
+        else
+        {
+            <span class="badge bg-secondary">Neaktivní</span>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary">Uložit</button>
+
+</EditForm>
