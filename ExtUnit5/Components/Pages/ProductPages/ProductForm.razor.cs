@@ -40,7 +40,15 @@ namespace ExtUnit5.Components.Pages.ProductPages
                     var newCategory = await context.Categories.FindAsync(selectedCategoryId);
                     product.Category = newCategory;
                 }
-                context.Products.Update(product);
+
+                if (ProductId is not null)
+                {
+                    context.Products.Update(product);
+                }
+                else
+                {
+                    context.Products.Add(product);
+                }
                 await context.SaveChangesAsync();
             }
 

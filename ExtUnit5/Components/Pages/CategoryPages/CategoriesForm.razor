@@ -1,17 +1,17 @@
 ﻿
-<EditForm FormName="AddCategory" Model="@categoryToAdd" OnValidSubmit="Submit">
+<EditForm FormName="@FormName" Model="@category" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
 
     <div class="form-group">
         <label for="name">Název</label>
-        <InputText id="name" class="form-control" @bind-Value="categoryToAdd.Name" />
-        <ValidationMessage For="@(() => categoryToAdd.Name)" />
+        <InputText id="name" class="form-control" @bind-Value="category.Name" />
+        <ValidationMessage For="@(() => category.Name)" />
     </div>
 
     <div class="form-group">
         <label for="description">Popis</label>
-        <InputTextArea id="description" class="form-control" @bind-Value="categoryToAdd.Description" />
-        <ValidationMessage For="@(() => categoryToAdd.Description)" />
+        <InputTextArea id="description" class="form-control" @bind-Value="category.Description" />
+        <ValidationMessage For="@(() => category.Description)" />
     </div>
 
     <button type="submit" class="btn btn-primary">Uložit</button>

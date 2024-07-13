@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ExtUnit5.Components.Pages.CategoryPages
 {
-    public partial class Categories : ComponentBase
+    public partial class Categories : ComponentBase, IDisposable
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
@@ -35,6 +35,11 @@ namespace ExtUnit5.Components.Pages.CategoryPages
         private void RedirectToAddCategory()
         {
             NavigationManager.NavigateTo($"/addcategory");
+        }
+
+        public void Dispose()
+        {
+            AppDbContext.Dispose();
         }
     }
 }
