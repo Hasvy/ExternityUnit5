@@ -1,4 +1,6 @@
+using Bogus;
 using Database;
+using ExtUnit5;
 using ExtUnit5.Components;
 using ExtUnit5.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -11,9 +13,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
+builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseLazyLoadingProxies()
+    .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.AddSingleton<FakeDataService>();
 
 var app = builder.Build();
 
@@ -38,13 +42,33 @@ List<Product> products = new List<Product>
     new Product { Category = categories[2], Name = "Product 10", Description = "Description 10", Price = 9.99f, Stock = 22 }
 };
 
+List<Customer> customers = new List<Customer>
+{
+    new Customer { FirstName = "Abc", LastName = "Afef", Email = "fwefwe", RegistrationDate = DateTime.Now }
+};
+
+List<Order> orders = new List<Order>
+{
+    new Order { Customer = customers[0], Status = OrderStatus.New, TotalAmount = 10, OrderDate = DateTime.Now }
+};
+
+List<OrderItem> orderItems = new List<OrderItem>
+{
+    new OrderItem { Order = orders[0], Product = products[3], Quantity = 10, UnitPrice = 10.50m }
+};
+
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
+
     context.Products.AddRange(products);
     context.Categories.AddRange(categories);
+    context.Customers.AddRange(customers);
+    context.Orders.AddRange(orders);
+    context.OrderItems.AddRange(orderItems);
+
     context.SaveChanges();
 }
 

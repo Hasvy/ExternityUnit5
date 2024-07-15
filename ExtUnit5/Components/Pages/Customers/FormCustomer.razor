@@ -1,0 +1,37 @@
+﻿
+<EditForm FormName="@FormName" Model="@customer" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="first-name">Jmeno</label>
+        <InputText id="first-name" class="form-control" @bind-Value="customer.FirstName" />
+        <ValidationMessage For="@(() => customer.FirstName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="last-name">Příjmení</label>
+        <InputText id="last-name" class="form-control" @bind-Value="customer.LastName" />
+        <ValidationMessage For="@(() => customer.LastName)" />
+    </div>
+
+    <div class="form-group">
+        <label for="address">Adresa</label>
+        <InputText id="address" class="form-control" @bind-Value="customer.Address" />
+        <ValidationMessage For="@(() => customer.Address)" />
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Telefonní čislo</label>
+        <InputText id="phone" class="form-control" @bind-Value="customer.PhoneNumber" />
+        <ValidationMessage For="@(() => customer.PhoneNumber)" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText id="email" class="form-control" @bind-Value="customer.Email" />
+        <ValidationMessage For="@(() => customer.Email)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Uložit</button>
+
+</EditForm>

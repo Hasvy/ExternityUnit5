@@ -1,0 +1,52 @@
+﻿@page "/customers"
+@rendermode InteractiveServer
+
+<h3>Customers</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm">
+        </div>
+        <div class="col-sm">
+        </div>
+        <div class="col-sm d-flex justify-content-end">
+            <button class="btn btn-primary" @onclick="RedirectToAddCustomer">Nový Zákazník</button>
+        </div>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Jmeno</th>
+            <th scope="col">Příjmení</th>
+            <th scope="col">Email</th>
+            <th scope="col">Telefonní čislo</th>
+            <th scope="col">Adresa</th>
+            <th scope="col">Datum registrace</th>
+            <th scope="col" style="width:10px"></th>
+            <th scope="col" style="width:10px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in AllCustomers)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.FirstName</td>
+                <td>@item.LastName</td>
+                <td>@item.Email</td>
+                <td>@item.PhoneNumber</td>
+                <td>@item.Address</td>
+                <td>@item.RegistrationDate</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="@(() => RedirectToEdit(item.Id))">Detail</button>
+                </td>
+                <td>
+                    <button class="btn btn-danger" @onclick="@(() => DeleteCustomer(item))">Smazát</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

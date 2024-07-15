@@ -8,10 +8,9 @@ namespace ExtUnit5.EntitiesConfigurations
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            //builder.HasKey(p => p.Id);
-            builder.HasOne(c => c.Category)
-                .WithMany()
-                .HasForeignKey(c => c.Id);
+            builder.HasOne(p => p.Category)
+                .WithMany();
+                //.HasForeignKey(c => c.Id);
         }
     }
 }

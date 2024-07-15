@@ -14,10 +14,9 @@ namespace ExtUnit5.Entities
         public string Name { get; set; } = null!;
 
         [Required(ErrorMessage = "Kategorie je povinná")]
-        public Category Category { get; set; } = null!;
+        public virtual Category Category { get; set; } = null!;
 
         [AllowNull]
-        [MaxLength(255)]
         [StringLength(255, ErrorMessage = "Description nesmí být delší než 255 znaků.")]
         public string? Description { get; set; }
 
@@ -31,5 +30,10 @@ namespace ExtUnit5.Entities
 
         [NotMapped]
         public bool IsActive => Stock > 0;
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }
