@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExtUnit5.Components.Pages.Orders
 {
-    public partial class OrderDetail : ComponentBase
+    public partial class OrderDetail : ComponentBase, IDisposable
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
@@ -20,12 +20,21 @@ namespace ExtUnit5.Components.Pages.Orders
             if (OrderId is not null)
             {
                 int.TryParse(OrderId, out int orderId);
-                orderItems = AppDbContext.OrderItems.Where(o => o.Order.Id == orderId).ToList();
                 var order = AppDbContext.Orders.Find(orderId);
+
                 if (order is not null)
+                {
+                    orderItems = order.OrderItems.ToList();
                     customer = order.Customer;
+                }
+
             }
             return base.OnInitializedAsync();
+        }
+
+        public void Dispose()
+        {
+            AppDbContext.Dispose();
         }
     }
 }

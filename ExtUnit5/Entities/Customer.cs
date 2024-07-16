@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
 
+
 namespace ExtUnit5.Entities
 {
     public class Customer
@@ -20,6 +21,7 @@ namespace ExtUnit5.Entities
 
         [Required]
         [EmailAddress]
+        [UniqueEmail]
         public string Email { get; set; }
 
         [AllowNull]
@@ -31,6 +33,8 @@ namespace ExtUnit5.Entities
 
         [Required]
         public DateTime RegistrationDate { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; }
 
         public override string ToString()
         {

@@ -15,21 +15,18 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in orders)
+        @if (customer is not null)
         {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Customer</td>
-                <td>@item.TotalAmount</td>
-                <td>@item.OrderDate</td>
-                <td>@item.Status</td>
-@*                 <td>
-                    <button class="btn btn-primary" @onclick="@(() => RedirectToEdit(item.Id))">Editovat</button>
-                </td>
-                <td>
-                    <button class="btn btn-danger" @onclick="@(() => DeleteCustomer(item))">Smazát</button>
-                </td> *@
-            </tr>
+            foreach (var item in customer.Orders)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.Customer</td>
+                    <td>@item.TotalAmount</td>
+                    <td>@item.OrderDate</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
         }
     </tbody>
 </table>

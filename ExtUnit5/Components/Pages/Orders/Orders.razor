@@ -1,7 +1,19 @@
-﻿@page "/orders"
+﻿@using ExtUnit5.Entities
+
+@page "/orders"
 @rendermode InteractiveServer
 
 <h3>Orders</h3>
+
+<input type="text" @bind="CustomerFilter" @bind:event="oninput" />
+
+<select @bind="SelectedStatus">
+    <option value="">All</option>
+    @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
+    {
+        <option value="@status">@status</option>
+    }
+</select>
 
 <table class="table table-hover">
     <thead>

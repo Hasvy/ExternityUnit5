@@ -12,11 +12,9 @@ namespace Database
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
-        public readonly FakeDataService _fakeDataService;
-        public readonly int _fakeDataCount = 10;
-        public AppDbContext(DbContextOptions<AppDbContext> options, FakeDataService fakeDataService) : base(options)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            _fakeDataService = fakeDataService;
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
@@ -41,17 +39,14 @@ namespace Database
             modelBuilder.Entity<Order>(entity =>
             {
                 entity.HasOne(o => o.Customer)
-                    .WithMany();
+                    .WithMany(c => c.Orders);
             });
 
             modelBuilder.Entity<OrderItem>(entity =>
             {
                 entity.HasOne(oi => oi.Order)
-                    .WithMany();
+                    .WithMany(o => o.OrderItems);
             });
-
-            //modelBuilder.Entity<Customer>().HasData(_fakeDataService.GetCustomers(_fakeDataCount));
-            //modelBuilder.Entity<Order>().HasData(_fakeDataService.GetOrders(_fakeDataCount));
         }
     }
 }
