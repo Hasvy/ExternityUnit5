@@ -1,7 +1,7 @@
 ﻿using Bogus;
 using ExtUnit5.Entities;
 
-namespace ExtUnit5
+namespace ExtUnit5.Services
 {
     public class FakeDataService
     {

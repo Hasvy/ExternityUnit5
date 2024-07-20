@@ -19,6 +19,10 @@ namespace ExtUnit5.Components.Pages.ProductPages
             AllProducts = AppDbContext.Products.ToList();
             return base.OnInitializedAsync();
         }
+        private void RedirectToAddProduct()
+        {
+            NavigationManager.NavigateTo($"/addproduct");
+        }
 
         private void RedirectToEdit(int id)
         {

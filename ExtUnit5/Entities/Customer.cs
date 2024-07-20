@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics.CodeAnalysis;
+using ExtUnit5.Validation;
 
 
 namespace ExtUnit5.Entities
@@ -13,16 +14,16 @@ namespace ExtUnit5.Entities
 
         [Required(ErrorMessage = "Jmeno je povinné")]
         [StringLength(50)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = null!;
 
         [Required(ErrorMessage = "Příjmení je povinné")]
         [StringLength(50)]
-        public string LastName { get; set; }
+        public string LastName { get; set; } = null!;
 
         [Required]
         [EmailAddress]
         [UniqueEmail]
-        public string Email { get; set; }
+        public string Email { get; set; } = null!;
 
         [AllowNull]
         [Phone]
@@ -34,7 +35,7 @@ namespace ExtUnit5.Entities
         [Required]
         public DateTime RegistrationDate { get; set; }
 
-        public virtual ICollection<Order> Orders { get; set; }
+        public virtual ICollection<Order> Orders { get; set; } = null!;
 
         public override string ToString()
         {

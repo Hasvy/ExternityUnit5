@@ -13,7 +13,11 @@
 
     <div class="form-group">
         <label for="category">Kategorie</label>
-        <InputSelect id="category" @bind-Value="selectedCategoryId">
+        <InputSelect id="category" @bind-Value="SelectedCategoryId">
+            @if (ProductId is null)
+            {
+                <option value="">Not selected</option>
+            }
             @foreach (Category category in allCategories)
             {
                 <option value="@category.Id">@category.Name</option>

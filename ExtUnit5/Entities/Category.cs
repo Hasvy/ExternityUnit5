@@ -19,7 +19,7 @@ namespace ExtUnit5.Entities
         [MaxLength(255)]
         [StringLength(255, ErrorMessage = "Description nesmí být delší než 255 znaků.")]
         public string? Description { get; set; }
-        //public IList<Product> Products { get; set; }
+        public virtual ICollection<Product> Products { get; set; } = null!;
 
         public override string ToString()
         {
