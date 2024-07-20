@@ -2,16 +2,10 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-namespace ExtUnit5
+namespace ExtUnit5.Validation
 {
     public class UniqueEmail : ValidationAttribute
     {
-        //private IDbContextFactory<AppDbContext> _dbContextFactory;
-
-        //public UniqueEmail(IDbContextFactory<AppDbContext> dbContextFactory)
-        //{
-        //    _dbContextFactory = dbContextFactory;
-        //}
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {

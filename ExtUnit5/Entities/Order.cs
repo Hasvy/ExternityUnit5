@@ -12,7 +12,7 @@ namespace ExtUnit5.Entities
         [Required]
         public virtual Customer Customer { get; set; } = null!;
 
-        public virtual ICollection<OrderItem> OrderItems { get; set; }
+        public virtual ICollection<OrderItem> OrderItems { get; set; } = null!;
 
         [Required]
         public DateTime OrderDate { get; set; }

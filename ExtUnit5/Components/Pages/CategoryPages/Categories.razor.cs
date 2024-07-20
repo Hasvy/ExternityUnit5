@@ -20,7 +20,12 @@ namespace ExtUnit5.Components.Pages.CategoryPages
             return base.OnInitializedAsync();
         }
 
-        private void Edit(int id)
+        private void RedirectToAddCategory()
+        {
+            NavigationManager.NavigateTo($"/addcategory");
+        }
+
+        private void RedirectToEdit(int id)
         {
             NavigationManager.NavigateTo($"/edit-categoryid-{id}");
         }
@@ -30,11 +35,6 @@ namespace ExtUnit5.Components.Pages.CategoryPages
             AppDbContext.Categories.Remove(category);
             await AppDbContext.SaveChangesAsync();
             AllCategories.Remove(category);
-        }
-
-        private void RedirectToAddCategory()
-        {
-            NavigationManager.NavigateTo($"/addcategory");
         }
 
         public void Dispose()
