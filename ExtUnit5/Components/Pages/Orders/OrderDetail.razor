@@ -4,53 +4,52 @@
 @page "/detail-orderid-{OrderId}"
 @rendermode InteractiveServer
 
-<h3>Order detail</h3>
-
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Produkt</th>
-            <th scope="col">Počet</th>
-            <th scope="col">Cena</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in orderItems)
-        {
-            <tr>
-                <td>@item.Id</td>
-                <td>@item.Product</td>
-                <td>@item.Quantity</td>
-                <td>@item.UnitPrice</td>
-            </tr>
-        }
-    </tbody>
-</table>
-
-<h3 class="mt-4">Informace o zákazníkovi</h3>
-<table class="table table-hover">
-    <thead>
-        <tr>
-            <th scope="col">Id</th>
-            <th scope="col">Jmeno</th>
-            <th scope="col">Příjmení</th>
-            <th scope="col">Email</th>
-            <th scope="col">Telefonní čislo</th>
-            <th scope="col">Adresa</th>
-            <th scope="col">Datum registrace</th>
-
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>@customer.Id</td>
-            <td>@customer.FirstName</td>
-            <td>@customer.LastName</td>
-            <td>@customer.Email</td>
-            <td>@customer.PhoneNumber</td>
-            <td>@customer.Address</td>
-            <td>@customer.RegistrationDate</td>
-        </tr>
-    </tbody>
-</table>
+<div class="row">
+    <div class="col-8">
+        <h3>Order detail</h3>
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th scope="col">Id</th>
+                    <th scope="col">Produkt</th>
+                    <th scope="col">Počet</th>
+                    <th scope="col">Cena</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in orderItems)
+                {
+                    <tr>
+                        <td>@item.Id</td>
+                        <td>@item.Product</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.UnitPrice</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-4">
+        <h3>Informace o zákazníkovi</h3>
+        <div class="col">
+            <div class="row">
+                <div>Jméno: @customer.FirstName</div>
+            </div>
+            <div class="row">
+                <div>Příjmení: @customer.LastName</div>
+            </div>            
+            <div class="row">
+                <div>Email: @customer.Email</div>
+            </div>            
+            <div class="row">
+                <div>Telefonní čislo: @customer.PhoneNumber</div>
+            </div>            
+            <div class="row">
+                <div>Adresa: @customer.Address</div>
+            </div>            
+            <div class="row">
+                <div>Datum registrace: @customer.RegistrationDate</div>
+            </div>
+        </div>
+    </div>
+</div>

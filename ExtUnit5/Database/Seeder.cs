@@ -18,7 +18,7 @@ namespace ExtUnit5.Database
 
         public void SeedDatabase()
         {
-            _dataService.Init(10);
+            _dataService.Init();
             using (var context = _dbContextFactory.CreateDbContext())
             {
                 context.Categories.AddRange(_dataService.CategoryList);

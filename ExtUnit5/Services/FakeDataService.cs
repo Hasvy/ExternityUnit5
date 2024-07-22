@@ -1,15 +1,25 @@
 ﻿using Bogus;
 using ExtUnit5.Entities;
+using ExtUnit5.Helpers;
 
 namespace ExtUnit5.Services
 {
+    public static class CategorySettings
+    {
+        public static int CategoryCount = 3;
+        public static int ProductCount = 10;
+        public static int CustomerCount = 10;
+        public static int OrderCount = 20;
+        //public static int OrderItemsCount = 50;
+    }
+
     public class FakeDataService
     {
-        public List<Category> CategoryList;
-        public List<Product> ProductList;
-        public List<Customer> CustomerList;
-        public List<Order> OrderList;
-        public List<OrderItem> OrderItemsList;
+        public List<Category> CategoryList = new List<Category>();
+        public List<Product> ProductList = new List<Product>();
+        public List<Customer> CustomerList = new List<Customer>();
+        public List<Order> OrderList = new List<Order>();
+        public List<OrderItem> OrderItemsList = new List<OrderItem>();
 
         private readonly Faker<Category> _categoryFaker;
         private readonly Faker<Product> _productFaker;
@@ -27,7 +37,7 @@ namespace ExtUnit5.Services
                 .RuleFor(p => p.Name, f => f.Commerce.Product())
                 .RuleFor(p => p.Description, f => f.Commerce.ProductDescription())
                 .RuleFor(p => p.Category, f => f.PickRandom(CategoryList))
-                .RuleFor(p => p.Price, f => f.Random.Float(0, 1000))
+                .RuleFor(p => p.Price, f => (float)Math.Round(f.Random.Float(0, 1000), 2))
                 .RuleFor(p => p.Stock, f => f.Random.Int(0, 10));
 
             _customerFaker = new Faker<Customer>("cz")
@@ -36,28 +46,26 @@ namespace ExtUnit5.Services
                 .RuleFor(u => u.Email, f => f.Internet.Email())
                 .RuleFor(u => u.Address, f => f.Address.FullAddress())
                 .RuleFor(u => u.PhoneNumber, f => f.Phone.PhoneNumber())
-                .RuleFor(u => u.RegistrationDate, f => f.Date.Between(new DateTime(2010, 1, 1), DateTime.Today));
-
-            _orderFaker = new Faker<Order>("cz")
-                .RuleFor(o => o.Customer, f => f.PickRandom(CustomerList))
-                .RuleFor(o => o.OrderDate, f => f.Date.Past(5))
-                .RuleFor(o => o.Status, f => EnumHelper.GetRandomEnumValue<OrderStatus>())
-                .RuleFor(o => o.TotalAmount, f => f.Random.Int(0, 50));
+                .RuleFor(u => u.RegistrationDate, f => f.Date.Between(new DateTime(2021, 1, 1), DateTime.Today));
 
             _orderItemFaker = new Faker<OrderItem>("cz")
-                .RuleFor(oi => oi.UnitPrice, f => f.Random.Decimal(1, 1000))
-                .RuleFor(oi => oi.Quantity, f => f.Random.Int(0, 50))
-                .RuleFor(oi => oi.Order, f => f.PickRandom(OrderList))
+                .RuleFor(oi => oi.Quantity, f => f.Random.WeightedRandom([1, 2, 3, 4, 5], [0.50f, 0.20f, 0.15f, 0.10f, 0.5f]))
                 .RuleFor(oi => oi.Product, f => f.PickRandom(ProductList));
+
+            _orderFaker = new Faker<Order>("cz")
+                .RuleFor(o => o.OrderItems, f => _orderItemFaker.Generate(f.Random.Int(1, 5)).ToList())
+                .RuleFor(o => o.Customer, f => f.PickRandom(CustomerList))
+                .RuleFor(o => o.OrderDate, f => f.Date.Past(1))
+                .RuleFor(o => o.Status, f => EnumHelper.GetRandomEnumValue<OrderStatus>());
         }
 
-        public void Init(int count)
+        public void Init()
         {
-            CategoryList = _categoryFaker.Generate(5);
-            ProductList = _productFaker.Generate(count);
-            CustomerList = _customerFaker.Generate(count);
-            OrderList = _orderFaker.Generate(count);
-            OrderItemsList = _orderItemFaker.Generate(count);
+            CategoryList = _categoryFaker.Generate(CategorySettings.CategoryCount);
+            ProductList = _productFaker.Generate(CategorySettings.ProductCount);
+            CustomerList = _customerFaker.Generate(CategorySettings.CustomerCount);
+            //OrderItemsList = _orderItemFaker.Generate(CategorySettings.OrderItemsCount);
+            OrderList = _orderFaker.Generate(CategorySettings.OrderCount);
         }
 
         //public List<Category> GetCategories(int count)

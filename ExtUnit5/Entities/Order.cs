@@ -18,7 +18,21 @@ namespace ExtUnit5.Entities
         public DateTime OrderDate { get; set; }
 
         [Required]
-        public decimal TotalAmount { get; set; }
+        public decimal TotalAmount
+        {
+            get
+            {
+                _totalAmount = OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity);
+                return _totalAmount;
+            }
+            set
+            {
+                _totalAmount = value;
+            }
+        }
+
+        private decimal _totalAmount;
+
 
         [Required]
         public OrderStatus Status { get; set; } = OrderStatus.New;
@@ -30,16 +44,5 @@ namespace ExtUnit5.Entities
         Processing,
         Finished,
         Cancelled
-    }
-
-    public static class EnumHelper
-    {
-        private static readonly Random _random = new Random();
-
-        public static T GetRandomEnumValue<T>() where T : Enum
-        {
-            Array values = Enum.GetValues(typeof(T));
-            return (T)values.GetValue(_random.Next(values.Length));
-        }
     }
 }
