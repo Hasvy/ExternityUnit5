@@ -2,6 +2,81 @@
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h3>Dashboard</h3>
 
-Welcome to your new app.
+@if (!_isLoading)
+{
+    <div class="row">
+        <div class="col-8">
+            <h3>Graf objednávek</h3>
+            @OrdersChart
+        </div>
+        <div class="col-4">
+            <h3>Metriky</h3>
+            <table class="table table-hover table-bordered">
+                <thead>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th scope="row">průměrný počet objednávek za den</th>
+                        <td>@meanOrdersValue</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">zákazníků se přidalo za měsíc</th>
+                        <td>@GetNewCustomersCount()</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10">
+            <h3>Produktové trendy</h3>
+            @GetProductTrendsChart()
+        </div>
+        <div class="col-2">
+            <h3></h3>
+            <table class="table table-hover table-bordered">
+                <thead class="bg-opacity-50" style="background-color: lawngreen">
+                    <tr>
+                        <th scope="row">populární</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in popularProducts)
+                    {
+                    <tr>
+                        <td>@item</td>
+                    </tr>
+                    }
+                </tbody>
+                <thead class="bg-opacity-50" style="background-color: yellow">
+                    <tr>
+                        <th scope="row">neutrální</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in neutralProducts)
+                    {
+                        <tr>
+                            <td>@item</td>
+                        </tr>
+                    }
+                </tbody>
+                <thead class="bg-opacity-50" style="background-color: red">
+                    <tr>
+                        <th scope="row">nepopulární</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in unpopularProducts)
+                    {
+                        <tr>
+                            <td>@item</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

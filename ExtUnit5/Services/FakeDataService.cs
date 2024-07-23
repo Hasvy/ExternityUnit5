@@ -8,8 +8,8 @@ namespace ExtUnit5.Services
     {
         public static int CategoryCount = 3;
         public static int ProductCount = 10;
-        public static int CustomerCount = 10;
-        public static int OrderCount = 20;
+        public static int CustomerCount = 50;
+        public static int OrderCount = 200;
         //public static int OrderItemsCount = 50;
     }
 
@@ -55,8 +55,25 @@ namespace ExtUnit5.Services
             _orderFaker = new Faker<Order>("cz")
                 .RuleFor(o => o.OrderItems, f => _orderItemFaker.Generate(f.Random.Int(1, 5)).ToList())
                 .RuleFor(o => o.Customer, f => f.PickRandom(CustomerList))
-                .RuleFor(o => o.OrderDate, f => f.Date.Past(1))
+                .RuleFor(o => o.OrderDate, f => GetWeightedDate(f))
                 .RuleFor(o => o.Status, f => EnumHelper.GetRandomEnumValue<OrderStatus>());
+        }
+
+        //Returns rather weekends
+        private DateTime GetWeightedDate(Faker f)
+        {
+            var dayOfweek = (DayOfWeek)f.Random.WeightedRandom([0, 1, 2, 3, 4, 5, 6], [0.2f, 0.12f, 0.12f, 0.12f, 0.12f, 0.12f, 0.2f]);
+            if (dayOfweek == DayOfWeek.Sunday || dayOfweek == DayOfWeek.Saturday)
+            {
+                var randomDay = f.Date.Past(1);
+                int daysToAdd = ((int)dayOfweek - (int)randomDay.DayOfWeek + 7) % 7;
+                var a = randomDay.AddDays(daysToAdd);
+                return a;
+            }
+            else
+            {
+                return f.Date.Past(1);
+            }
         }
 
         public void Init()
