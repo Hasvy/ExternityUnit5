@@ -37,9 +37,18 @@ namespace ExtUnit5.Entities
 
         public virtual ICollection<Order> Orders { get; set; } = null!;
 
+        public CustomerGroup CustomerGroup { get; set; } = CustomerGroup.Basic;
+
         public override string ToString()
         {
             return FirstName + " " + LastName;
         }
+    }
+
+    public enum CustomerGroup
+    {
+        Basic,
+        Regular,
+        VIP
     }
 }

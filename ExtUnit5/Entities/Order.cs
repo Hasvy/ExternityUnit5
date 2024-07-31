@@ -18,20 +18,9 @@ namespace ExtUnit5.Entities
         public DateTime OrderDate { get; set; }
 
         [Required]
-        public decimal TotalAmount
-        {
-            get
-            {
-                _totalAmount = OrderItems.Sum(oi => oi.UnitPrice * oi.Quantity);
-                return _totalAmount;
-            }
-            set
-            {
-                _totalAmount = value;
-            }
-        }
+        public decimal TotalAmount { get; set; }
 
-        private decimal _totalAmount;
+        //private decimal _totalAmount;
 
 
         [Required]

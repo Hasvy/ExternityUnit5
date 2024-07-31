@@ -50,10 +50,12 @@ namespace ExtUnit5.Services
 
             _orderItemFaker = new Faker<OrderItem>("cz")
                 .RuleFor(oi => oi.Quantity, f => f.Random.WeightedRandom([1, 2, 3, 4, 5], [0.50f, 0.20f, 0.15f, 0.10f, 0.5f]))
-                .RuleFor(oi => oi.Product, f => f.PickRandom(ProductList));
+                .RuleFor(oi => oi.Product, f => f.PickRandom(ProductList))
+                .RuleFor(oi => oi.UnitPrice, (f, oi) => oi.UnitPrice = oi.Quantity * (decimal)oi.Product.Price);
 
             _orderFaker = new Faker<Order>("cz")
                 .RuleFor(o => o.OrderItems, f => _orderItemFaker.Generate(f.Random.Int(1, 5)).ToList())
+                .RuleFor(o => o.TotalAmount, (f, o) => o.TotalAmount = o.OrderItems.Sum(oi => oi.UnitPrice))
                 .RuleFor(o => o.Customer, f => f.PickRandom(CustomerList))
                 .RuleFor(o => o.OrderDate, f => GetWeightedDate(f))
                 .RuleFor(o => o.Status, f => EnumHelper.GetRandomEnumValue<OrderStatus>());

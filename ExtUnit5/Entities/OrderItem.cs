@@ -19,19 +19,25 @@ namespace ExtUnit5.Entities
         public int Quantity { get; set; }
 
         [Required]
-        public decimal UnitPrice 
-        {
-            get
-            {
-                _unitPrice = Quantity * (decimal)Product.Price;
-                return _unitPrice;
-            }
-            set
-            {
-                _unitPrice = value;
-            }
-        }
+        public decimal UnitPrice { get; set; }
+        //public decimal UnitPrice
+        //{
+        //    get
+        //    {
+        //        _unitPrice = Quantity * (decimal)Product.Price;
+        //        return _unitPrice;
+        //    }
+        //    set
+        //    {
+        //        _unitPrice = value;
+        //    }
+        //}
 
-        private decimal _unitPrice;
+        //private decimal _unitPrice;
+
+        //public void CalculateUnitPrice()
+        //{
+        //    UnitPrice = Quantity * (decimal)Product.Price;
+        //}
     }
 }

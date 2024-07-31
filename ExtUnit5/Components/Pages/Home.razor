@@ -22,8 +22,24 @@
                         <td>@meanOrdersValue</td>
                     </tr>
                     <tr>
+                        <th scope="row">celkový počet objednávek</th>
+                        <td>@totalOrdersCount</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">průměrná cena objednávky</th>
+                        <td>@meanOrdersAmount</td>
+                    </tr>
+                    <tr>
                         <th scope="row">zákazníků se přidalo za měsíc</th>
                         <td>@GetNewCustomersCount()</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">pravidelných zákazníků</th>
+                        <td>@GetRegularCustomersCount()</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">VIP zákazníků</th>
+                        <td>@GetVipCustomersCount()</td>
                     </tr>
                 </tbody>
             </table>
