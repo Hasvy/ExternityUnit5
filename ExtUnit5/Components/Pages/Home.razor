@@ -7,13 +7,19 @@
 @if (!_isLoading)
 {
     <div class="row">
-        <div class="col-8">
-            <h3>Graf objednávek</h3>
-            @OrdersChart
+        <div class="col-8 p-0 chart-wrap upper-blocks" style="border-bottom-width: 2px">
+            <div class="bg-info rounded-3">
+                <h3 class="m-0 ms-2">Graf objednávek</h3>
+            </div>
+            <div class="border embed-responsive embed-responsive-21by9">
+                @OrdersChart
+            </div>
         </div>
-        <div class="col-4">
-            <h3>Metriky</h3>
-            <table class="table table-hover table-bordered">
+        <div class="col-4 p-0 chart-wrap upper-blocks" style="border-bottom-width: 2px">
+            <div class="bg-warning rounded-3">
+                <h3 class="m-0 ms-2">Metriky</h3>
+            </div>
+            <table class="table table-hover table-bordered" style="margin-top: 100px">
                 <thead>
                 </thead>
                 <tbody>
@@ -45,13 +51,14 @@
             </table>
         </div>
     </div>
-    <div class="row">
-        <div class="col-10">
+    <div class="row p-0 chart-wrap bottom-blocks">
+        <div class="bg-info rounded-3">
             <h3>Produktové trendy</h3>
+        </div>
+        <div class="col-10">
             @GetProductTrendsChart()
         </div>
-        <div class="col-2">
-            <h3></h3>
+        <div class="col-2 card">
             <table class="table table-hover table-bordered">
                 <thead class="bg-opacity-50" style="background-color: lawngreen">
                     <tr>

@@ -6,7 +6,8 @@ using ExtUnit5.Entities.Grouping;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Plotly.NET.CSharp;
+//using Plotly.NET.CSharp;
+using Plotly.NET;
 using Plotly.NET.LayoutObjects;
 using Plotly.NET.TraceObjects;
 using System;
@@ -92,15 +93,16 @@ namespace ExtUnit5.Components.Pages
                 .OrderBy(o => o.Month)
                 .ToList();
 
-            var genericChart = Plotly.NET.CSharp.Chart.Line<DateTime, int, string>(
+            var genericChart = Plotly.NET.Chart2D.Chart.Line<DateTime, int, string>(
                 y: monthlyGroupedOrders.Select(g => g.OrderCount),
                 x: monthlyGroupedOrders.Select(g => g.Month)
                 )
                 .WithSize(800, 400)
-                .WithTraceInfo("Orders Count", ShowLegend: true)
-                .WithXAxisStyle<int, DateTime, string>(Title: Plotly.NET.Title.init("Month"))
-                .WithYAxisStyle<int, DateTime, string>(Title: Plotly.NET.Title.init("Orders Count")
-                );
+                .WithTraceInfo("Orders Count", ShowLegend: false)
+                .WithXAxisStyle(title: Plotly.NET.Title.init("Month"))
+                .WithYAxisStyle(title: Plotly.NET.Title.init("Orders Count"));
+            
+                //.Plotly.NET.WithLegendStyle(Orientation: StyleParam.Orientation.Horizontal, X: 0.5, XAnchor: StyleParam.XAnchorPosition.Center);
 
             return (MarkupString)Plotly.NET.GenericChart.toChartHTML(genericChart);
         }
@@ -136,7 +138,7 @@ namespace ExtUnit5.Components.Pages
 
             foreach (var productData in groupedProducts)
             {
-                charts.Add(Chart.Line<DateTime, int, string>(
+                charts.Add(Chart2D.Chart.Line<DateTime, int, string>(
                     x: productData.DatesOrdered.Select(d => d.Month),
                     y: productData.DatesOrdered.Select(d => d.OrderCount),
                     Name: productData.ProductName ?? "Product " + productData.ProductId.ToString()
@@ -144,9 +146,9 @@ namespace ExtUnit5.Components.Pages
             }
 
             var combinedChart = Chart.Combine(charts)
-                .WithSize(1000)
-                .WithXAxisStyle<int, DateTime, string>(Title: Plotly.NET.Title.init("Date"))
-                .WithYAxisStyle<int, DateTime, string>(Title: Plotly.NET.Title.init("Order Count"));
+                .WithSize(1000, 500)
+                .WithXAxisStyle(title: Plotly.NET.Title.init("Date"))
+                .WithYAxisStyle(title: Plotly.NET.Title.init("Order Count"));
 
             SeparateProducts();
 
