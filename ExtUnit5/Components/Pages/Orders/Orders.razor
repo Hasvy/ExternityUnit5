@@ -28,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in AllOrders)
+        @foreach (var item in OrdersOnPage)
         {
             <tr>
                 <td>@item.Id</td>
@@ -46,3 +46,5 @@
         }
     </tbody>
 </table>
+
+<Pagination TItem="Order" Items="OrdersOnPage" ItemsOnPage="_itemsPerPage" CurrentPage="_currentPage" OnPageChanged="HandlePageChanged" />

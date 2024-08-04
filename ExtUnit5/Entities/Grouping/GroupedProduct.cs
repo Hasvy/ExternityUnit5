@@ -3,8 +3,8 @@
     public class GroupedProduct
     {
         public int ProductId { get; set; }
-        public string? ProductName { get; set; }
-        public List<MonthlyOrder> DatesOrdered { get; set; }
+        public string ProductName { get; set; } = null!;
+        public List<MonthlyOrder> DatesOrdered { get; set; } = new List<MonthlyOrder>();
     }
 
     public class MonthlyOrder

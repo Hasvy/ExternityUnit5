@@ -12,6 +12,10 @@ namespace ExtUnit5.Components.Pages.Customers
         private List<Customer> AllCustomers { get; set; } = new List<Customer>();
         private AppDbContext AppDbContext { get; set; } = null!;
 
+        private int _currentPage = 1;
+        private int _itemsPerPage = 10;
+        private List<Customer> CustomersOnPage => AllCustomers.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
+
         protected override Task OnInitializedAsync()
         {
             AppDbContext = DbContextFactory.CreateDbContext();
@@ -33,6 +37,11 @@ namespace ExtUnit5.Components.Pages.Customers
             AppDbContext.Customers.Remove(customer);
             await AppDbContext.SaveChangesAsync();
             AllCustomers.Remove(customer);
+        }
+
+        private void HandlePageChanged(int newPageNumber)
+        {
+            _currentPage = newPageNumber;
         }
 
         public void Dispose()

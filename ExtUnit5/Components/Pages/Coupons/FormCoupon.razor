@@ -1,0 +1,50 @@
+﻿@using ExtUnit5.Entities;
+
+<EditForm FormName="@FormName" Model="@coupon" OnValidSubmit="Submit">
+    <DataAnnotationsValidator />
+
+    <div class="form-group">
+        <label for="first-name">Jmeno</label>
+        <InputText id="first-name" class="form-control" @bind-Value="coupon.Code" />
+        <ValidationMessage For="@(() => coupon.Code)" />
+    </div>
+
+    <div class="form-group">
+        <label for="last-name">Příjmení</label>
+        <InputSelect @bind-Value="SelectedCustomerId">
+            <option value="">None</option>
+            @foreach (var customer in AppDbContext.Customers.OrderBy(c => c.FirstName).ToList())
+            {
+                <option value="@customer.Id">@customer</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => coupon.Customer)" />
+    </div>
+
+    <div class="form-group">
+        <label for="address">Adresa</label>
+        <InputSelect @bind-Value="SelectedProductId">
+            <option value="">None</option>
+            @foreach (var product in AppDbContext.Products.ToList())
+            {
+                <option value="@product.Id">@product</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="@(() => coupon.Product)" />
+    </div>
+
+    <div class="form-group">
+        <label for="phone">Telefonní čislo</label>
+        <InputNumber id="phone" class="form-control" @bind-Value="coupon.Discount" />
+        <ValidationMessage For="@(() => coupon.Discount)" />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputNumber id="email" class="form-control" @bind-Value="coupon.PriceWithDiscount" />
+        <ValidationMessage For="@(() => coupon.PriceWithDiscount)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Uložit</button>
+
+</EditForm>

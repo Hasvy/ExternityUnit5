@@ -1,0 +1,50 @@
+﻿@using ExtUnit5.Entities
+
+@page "/coupons"
+@rendermode InteractiveServer
+
+<h3>Coupons</h3>
+
+<div class="row">
+    <div class="col-sm">
+    </div>
+    <div class="col-sm">
+    </div>
+    <div class="col-sm d-flex justify-content-end">
+        <button class="btn btn-primary" @onclick="RedirectToAddCoupon">Nový Zákazník</button>
+    </div>
+</div>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Id</th>
+            <th scope="col">Kód</th>
+            <th scope="col">Zákazník</th>
+            <th scope="col">Produkt</th>
+            <th scope="col">Sleva</th>
+            <th scope="col">Cena se slevou</th>
+            <th scope="col" style="width:10px"></th>
+            <th scope="col" style="width:10px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in CouponsOnPage)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Code</td>
+                <td>@item.Customer</td>
+                <td>@item.Product</td>
+                <td>@item.Discount</td>
+                <td>@item.PriceWithDiscount</td>
+@*                 <td>
+                    <button class="btn btn-primary" @onclick="@(() => RedirectToEdit(item.Id))">Detail</button>
+                </td> *@
+                <td>
+                    <button class="btn btn-danger" @onclick="@(() => DeleteCoupon(item))">Odvolat</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

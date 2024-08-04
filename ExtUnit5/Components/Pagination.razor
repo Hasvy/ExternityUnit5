@@ -1,0 +1,16 @@
+﻿@typeparam TItem
+
+<div>
+    <button @onclick="@(() => ChangePage(1))" disabled="@_isFirstPage">First</button>
+    <button @onclick="@(() => ChangePage(CurrentPage - 1))" disabled="@_isFirstPage">Previous</button>
+
+    <div>
+        @foreach (var pageNum in PageNumbers)
+        {
+            <button @onclick="() => ChangePage(pageNum)">@pageNum</button>
+        }
+    </div>
+
+    <button @onclick="@(() => ChangePage(CurrentPage + 1))" disabled="@_isLastPage">Next</button>
+    <button @onclick="@(() => ChangePage(TotalPages))" disabled="@_isLastPage">Last</button>
+</div>

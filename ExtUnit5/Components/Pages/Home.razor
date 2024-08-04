@@ -12,7 +12,7 @@
                 <h3 class="m-0 ms-2">Graf objednávek</h3>
             </div>
             <div class="border embed-responsive embed-responsive-21by9">
-                @OrdersChart
+                @GetOrdersChart()
             </div>
         </div>
         <div class="col-4 p-0 chart-wrap upper-blocks" style="border-bottom-width: 2px">
@@ -24,8 +24,8 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <th scope="row">průměrný počet objednávek za den</th>
-                        <td>@meanOrdersValue</td>
+                        <th scope="row">průměrný počet objednávek za měsíc</th>
+                        <td>@avgOrdersValue</td>
                     </tr>
                     <tr>
                         <th scope="row">celkový počet objednávek</th>
@@ -36,21 +36,33 @@
                         <td>@meanOrdersAmount</td>
                     </tr>
                     <tr>
-                        <th scope="row">zákazníků se přidalo za měsíc</th>
-                        <td>@GetNewCustomersCount()</td>
+                        <th scope="row">zákazníků se přidalo za poslední měsíc</th>
+                        <td>@newCustomersCount</td>
                     </tr>
                     <tr>
                         <th scope="row">pravidelných zákazníků</th>
-                        <td>@GetRegularCustomersCount()</td>
+                        <td>@regularCustomersCount</td>
                     </tr>
                     <tr>
                         <th scope="row">VIP zákazníků</th>
-                        <td>@GetVipCustomersCount()</td>
+                        <td>@vipCustomersCount</td>
                     </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="row">
+        <div class="col-12 p-0 chart-wrap upper-blocks, bottom-blocks" style="border-bottom-width: 2px">
+            <div class="bg-info rounded-3">
+                <h3 class="m-0 ms-2">Graf nových zákazníků za měsíc</h3>
+            </div>
+            <div class="border embed-responsive embed-responsive-21by9">
+                @GetNewCustomersChart()
+            </div>
+        </div>
+    </div>
+
     <div class="row p-0 chart-wrap bottom-blocks">
         <div class="bg-info rounded-3">
             <h3>Produktové trendy</h3>

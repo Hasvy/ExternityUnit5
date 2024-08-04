@@ -12,6 +12,11 @@ namespace ExtUnit5.Components.Pages.Orders
         private List<Order> AllOrders { get; set; } = new List<Order>();
         private List<Order> FilteredOrders { get; set; } = new List<Order>();
         private AppDbContext AppDbContext { get; set; } = null!;
+
+        private int _currentPage = 1;
+        private int _itemsPerPage = 10;
+        private List<Order> OrdersOnPage => AllOrders.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
+
         private string? CustomerFilter 
         {
             get => _customerFilterInput;
@@ -60,6 +65,11 @@ namespace ExtUnit5.Components.Pages.Orders
                 (SelectedStatus == null || o.Status == SelectedStatus) &&
                 (CustomerFilter == null || (o.Customer.FirstName + " " + o.Customer.LastName).Contains(CustomerFilter))
             ).ToList();
+        }
+
+        private void HandlePageChanged(int newPageNumber)
+        {
+            _currentPage = newPageNumber;
         }
 
         public void Dispose()

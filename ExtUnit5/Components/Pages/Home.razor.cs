@@ -1,36 +1,25 @@
-﻿using Bogus;
-using Database;
-using ExtUnit5.Components.Pages.Orders;
+﻿using Database;
 using ExtUnit5.Entities;
 using ExtUnit5.Entities.Grouping;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-//using Plotly.NET.CSharp;
 using Plotly.NET;
-using Plotly.NET.LayoutObjects;
-using Plotly.NET.TraceObjects;
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using Microsoft.JSInterop;
 
 namespace ExtUnit5.Components.Pages
 {
     public partial class Home : ComponentBase
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
-        [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Inject] IJSRuntime JS { get; set; }
-        private List<Order> Orders { get; set; }
+        private List<Order> Orders { get; set; } = new List<Order>();
+        private List<Customer> Customers { get; set; } = new List<Customer>();
 
         private AppDbContext AppDbContext { get; set; } = null!;
-        private MarkupString OrdersChart;
-        private MarkupString MetricsTable;
-        private float meanOrdersValue;
+        private float avgOrdersValue;
         private float meanOrdersAmount;
         private int totalOrdersCount;
-        private List<GroupedProduct> groupedProducts;
+        private int newCustomersCount;
+        private int regularCustomersCount;
+        private int vipCustomersCount;
         private List<string> popularProducts = new List<string>();
         private List<string> neutralProducts = new List<string>();
         private List<string> unpopularProducts = new List<string>();
@@ -39,50 +28,25 @@ namespace ExtUnit5.Components.Pages
         {
             _isLoading = true;
             AppDbContext = await DbContextFactory.CreateDbContextAsync();
+
             Orders = AppDbContext.Orders.ToList();
-            OrdersChart = GetOrdersChart();
+            Customers = AppDbContext.Customers.ToList();
+            ActualizeCustomersGroups();
+
             totalOrdersCount = GetTotalOrdersCount();
             meanOrdersAmount = GetMeanOrdersAmount();
-            ActualizeCustomersGroups();
-            //JS.InvokeVoidAsync("renderOrdersChart");
-            //MetricsTable = GetMetricsTable();
+            newCustomersCount = GetNewCustomersCount();
+            regularCustomersCount = GetRegularCustomersCount();
+            vipCustomersCount = GetVipCustomersCount();
+
             await base.OnInitializedAsync();
             _isLoading = false;
         }
 
+        #region Charts
+
         private MarkupString GetOrdersChart()
         {
-            #region Dictionary
-            //var dict = new Dictionary<DateTime, List<Order>>();
-            //foreach (var order in orders)
-            //{
-            //    DateTime date = order.OrderDate.Date;
-
-            //    if (dict.ContainsKey(date))
-            //    {
-            //        dict[date].Add(order);
-            //    }
-            //    else
-            //    {
-            //        dict.Add(date, new List<Order> { order });
-            //    }
-            //}
-            #endregion
-
-            var groupedOrders = Orders
-                .GroupBy(o => o.OrderDate.Date)
-                .Select(g => new
-                {
-                    OrderDate = g.Key,
-                    Orders = g.ToList()
-                })
-                .OrderBy(g => g.OrderDate)
-                .ToList();
-
-            var a = groupedOrders.Sum(g => g.Orders.Count);
-            var b = groupedOrders.Select(g => g.OrderDate).Count();
-            meanOrdersValue = (float)a / b;
-
             var monthlyGroupedOrders = Orders
                 .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
                     .Select(dg => new MonthlyOrder
@@ -93,34 +57,30 @@ namespace ExtUnit5.Components.Pages
                 .OrderBy(o => o.Month)
                 .ToList();
 
-            var genericChart = Plotly.NET.Chart2D.Chart.Line<DateTime, int, string>(
+            var avgOrders = (float)monthlyGroupedOrders.Average(o => o.OrderCount);
+            avgOrdersValue = (float)Math.Round(avgOrders);
+
+            var genericChart = Chart2D.Chart.SplineArea<DateTime, int, string>(
                 y: monthlyGroupedOrders.Select(g => g.OrderCount),
                 x: monthlyGroupedOrders.Select(g => g.Month)
                 )
                 .WithSize(800, 400)
                 .WithTraceInfo("Orders Count", ShowLegend: false)
-                .WithXAxisStyle(title: Plotly.NET.Title.init("Month"))
-                .WithYAxisStyle(title: Plotly.NET.Title.init("Orders Count"));
-            
-                //.Plotly.NET.WithLegendStyle(Orientation: StyleParam.Orientation.Horizontal, X: 0.5, XAnchor: StyleParam.XAnchorPosition.Center);
+                .WithXAxisStyle(title: Title.init("Month"))
+                .WithYAxisStyle(title: Title.init("Orders Count"));
 
-            return (MarkupString)Plotly.NET.GenericChart.toChartHTML(genericChart);
-        }
-
-        private int GetNewCustomersCount()
-        {
-            return AppDbContext.Customers.Where(c => c.RegistrationDate.Month == DateTime.Today.Month).Count();
+            return (MarkupString)GenericChart.toChartHTML(genericChart);
         }
 
         private MarkupString GetProductTrendsChart()
         {
             var orderItems = AppDbContext.OrderItems.ToList();
-            groupedProducts = orderItems
+            var groupedProducts = orderItems
                 .GroupBy(oi => oi.Product.Id)
                 .Select(g => new GroupedProduct
                 {
                     ProductId = g.Key,
-                    ProductName = AppDbContext.Products.Find(g.Key)?.Name,
+                    ProductName = AppDbContext.Products.Find(g.Key)?.Name!,
                     DatesOrdered = g
                         .GroupBy(oi => new { oi.Order.OrderDate.Year, oi.Order.OrderDate.Month })
                         .Select(dg => new MonthlyOrder
@@ -134,11 +94,13 @@ namespace ExtUnit5.Components.Pages
                 .OrderByDescending(g => g.DatesOrdered.Count())
                 .ToList();
 
-            List<Plotly.NET.GenericChart> charts = new List<Plotly.NET.GenericChart>();
+            GroupProductsByPopularity(groupedProducts);
+
+            List<GenericChart> charts = new List<GenericChart>();
 
             foreach (var productData in groupedProducts)
             {
-                charts.Add(Chart2D.Chart.Line<DateTime, int, string>(
+                charts.Add(Chart2D.Chart.Spline<DateTime, int, string>(
                     x: productData.DatesOrdered.Select(d => d.Month),
                     y: productData.DatesOrdered.Select(d => d.OrderCount),
                     Name: productData.ProductName ?? "Product " + productData.ProductId.ToString()
@@ -147,12 +109,45 @@ namespace ExtUnit5.Components.Pages
 
             var combinedChart = Chart.Combine(charts)
                 .WithSize(1000, 500)
-                .WithXAxisStyle(title: Plotly.NET.Title.init("Date"))
-                .WithYAxisStyle(title: Plotly.NET.Title.init("Order Count"));
+                .WithXAxisStyle(title: Title.init("Date"))
+                .WithYAxisStyle(title: Title.init("Order Count"));
 
-            SeparateProducts();
+            return (MarkupString)GenericChart.toChartHTML(combinedChart);
+        }
 
-            return (MarkupString)Plotly.NET.GenericChart.toChartHTML(combinedChart);
+        private MarkupString GetNewCustomersChart()
+        {
+            var monthlyGroupedCustomers = Customers
+                .GroupBy(c => new { c.RegistrationDate.Year, c.RegistrationDate.Month })
+                    .Select(dg => new 
+                    {
+                        Month = new DateTime(dg.Key.Year, dg.Key.Month, 1),
+                        CustomersCount = dg.Count()
+                    })
+                .OrderBy(c => c.Month)
+                .ToList();
+
+            var newCustomersForYear = monthlyGroupedCustomers.Where(g => g.Month.Year == DateTime.Today.AddYears(-1).Year);
+
+            var newCustomersChart = Chart2D.Chart.Column<int, DateTime, string, string, string> (
+                    Keys: newCustomersForYear.Select(g => g.Month).ToList(),
+                    values: monthlyGroupedCustomers.Select(g => g.CustomersCount)
+                )
+                .WithSize(1200, 400)
+                .WithTraceInfo("Customers Count", ShowLegend: false)
+                .WithXAxisStyle(title: Title.init("Month"))
+                .WithYAxisStyle(title: Title.init("Customers Count"));
+
+            return (MarkupString)GenericChart.toChartHTML(newCustomersChart);
+        }
+
+        #endregion
+
+        #region Metrics
+
+        private int GetNewCustomersCount()
+        {
+            return AppDbContext.Customers.Where(c => c.RegistrationDate.Month == DateTime.Today.Month).Count();
         }
 
         private int GetTotalOrdersCount()
@@ -162,52 +157,18 @@ namespace ExtUnit5.Components.Pages
 
         private float GetMeanOrdersAmount()
         {
-            //decimal sumAmount = 0M;
-            //foreach (var item in AppDbContext.Orders.ToList())
-            //{
-            //    sumAmount += item.TotalAmount;
-            //}
             decimal sumAmount = AppDbContext.Orders.Sum(o => o.TotalAmount);
-            return (float)sumAmount / totalOrdersCount;
+            var roundedSumAmount = Math.Round((float)sumAmount / totalOrdersCount, 2);
+            return (float)roundedSumAmount;
         }
 
-        private void ActualizeCustomersGroups()             //This process should be perform after order is finished, but we don't have this feature yet
-        {
-            //var groupedOrders = Orders
-            //    .GroupBy(o => o.Customer)
-            //    .Select(c => new
-            //    {
-            //        Customer = c.Key,
-            //        Orders = Orders.Where(o => o.Customer == c.Key && o.Status == OrderStatus.Finished),
-            //    });
-
-            Dictionary<Customer, decimal> customersDict = new Dictionary<Customer, decimal>();
-            foreach (var customer in AppDbContext.Customers.ToList())
-            {
-                customersDict.Add(customer, customer.Orders.Where(o => o.Status == OrderStatus.Finished).Sum(o => o.TotalAmount));
-            }
-            var sortedCustomersDict = customersDict.OrderByDescending(c => c.Value);
-            //var finishedOrders = AppDbContext.Orders.Where(o => o.Status == OrderStatus.Finished);
-            //var sortedOrders = finishedOrders.OrderByDescending(o => o.TotalAmount).ToList();
-            var indexOftreshold = (int)(0.10 * sortedCustomersDict.Count());
-            var treshold = sortedCustomersDict.ToArray()[indexOftreshold].Value;
-            foreach (var customer in AppDbContext.Customers.ToList())
-            {
-                if (customer.Orders.Where(o => o.Status == OrderStatus.Finished).Sum(o => o.TotalAmount) > treshold)
-                {
-                    customer.CustomerGroup = CustomerGroup.VIP;
-                    continue;
-                }
-
-                bool boughtInLastMonth = customer.Orders.ToList().Exists(o => o.OrderDate.Month == DateTime.Now.AddMonths(-1).Month);
-                bool boughtInLastprelastMonth = customer.Orders.ToList().Exists(o => o.OrderDate.Month == DateTime.Now.AddMonths(-2).Month);
-                if (boughtInLastMonth && boughtInLastprelastMonth)
-                {
-                    customer.CustomerGroup = CustomerGroup.Regular;
-                }
-            }
-            AppDbContext.SaveChanges();
-        }
+        //private float GetMeanOrdersValuePerMonth()
+        //{
+        //    var totalOrdersNumber = AppDbContext.Orders.Count();
+        //    var numberOfMonths = 12;//AppDbContext.Orders.Sum(g => g.OrderDate.Month);
+        //    var meanOrdersValueDecimal = Math.Round((float)totalOrdersNumber / numberOfMonths, 1);
+        //    return (float)meanOrdersValueDecimal;
+        //}
 
         private int GetRegularCustomersCount()
         {
@@ -219,12 +180,10 @@ namespace ExtUnit5.Components.Pages
             return AppDbContext.Customers.Where(c => c.CustomerGroup == CustomerGroup.VIP).Count();
         }
 
-        private void SeparateProducts()
-        {
-            //List<int> popularProducts = new List<int>();
-            //List<int> neutralProducts = new List<int>();
-            //List<int> unpopularProducts = new List<int>();
+        #endregion
 
+        private void GroupProductsByPopularity(List<GroupedProduct> groupedProducts)
+        {
             foreach (var product in groupedProducts)
             {
                 if (product.DatesOrdered.Count >= 2)
@@ -242,26 +201,32 @@ namespace ExtUnit5.Components.Pages
             }
         }
 
-        //private MarkupString GetMetricsTable()
-        //{
-        //    var headers = new[] { "Column 1", "Column 2", "Column 3" };
-        //    var cells = new[,] {
-        //        { "Row 1 Col 1", "Row 1 Col 2", "Row 1 Col 3" },
-        //        { "Row 2 Col 1", "Row 2 Col 2", "Row 2 Col 3" },
-        //        { "Row 3 Col 1", "Row 3 Col 2", "Row 3 Col 3" }
-        //    };
+        private void ActualizeCustomersGroups()             //This process should be performed after order is finished, but we don't have this feature yet
+        {
+            Dictionary<Customer, decimal> customersDict = new Dictionary<Customer, decimal>();
+            foreach (var customer in AppDbContext.Customers.ToList())
+            {
+                customersDict.Add(customer, customer.Orders.Where(o => o.Status == OrderStatus.Finished).Sum(o => o.TotalAmount));
+            }
+            var sortedCustomersDict = customersDict.OrderByDescending(c => c.Value);
+            var indexOftreshold = (int)(0.10 * sortedCustomersDict.Count());
+            var treshold = sortedCustomersDict.ToArray()[indexOftreshold].Value;
+            foreach (var customer in AppDbContext.Customers.ToList())
+            {
+                if (customer.Orders.Where(o => o.Status == OrderStatus.Finished).Sum(o => o.TotalAmount) > treshold)
+                {
+                    customer.CustomerGroup = CustomerGroup.VIP;
+                    continue;
+                }
 
-        //    var table = Plotly.NET.ChartDomain.Chart.Table<string, string, string>(headers, cells);
-        //    //    ChartDomain.Chart.Table<string[], float[]>(
-        //    //        headerValues: header,
-        //    //        cellsValues: cells);
-        //    //    header.SetValue("row 1", "průměrný počet objednávek za den");
-        //    //    cells.SetValue("row 2", meanOrdersValue);
-        //    //    var genericChart = Chart.Table(
-        //    //        header: header,
-        //    //        cells: cells);
-
-        //    return (MarkupString)Plotly.NET.GenericChart.toChartHTML(genericChart);
-        //}
+                bool boughtInLastMonth = customer.Orders.ToList().Exists(o => o.OrderDate.Month == DateTime.Now.AddMonths(-1).Month);
+                bool boughtInPreLastMonth = customer.Orders.ToList().Exists(o => o.OrderDate.Month == DateTime.Now.AddMonths(-2).Month);
+                if (boughtInLastMonth && boughtInPreLastMonth)
+                {
+                    customer.CustomerGroup = CustomerGroup.Regular;
+                }
+            }
+            AppDbContext.SaveChanges();
+        }
     }
 }

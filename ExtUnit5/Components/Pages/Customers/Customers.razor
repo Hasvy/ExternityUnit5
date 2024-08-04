@@ -1,4 +1,5 @@
 ﻿@page "/customers"
+@using ExtUnit5.Entities
 @rendermode InteractiveServer
 
 <h3>Customers</h3>
@@ -28,7 +29,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var item in AllCustomers)
+        @foreach (var item in CustomersOnPage)
         {
             <tr>
                 <td>@item.Id</td>
@@ -48,3 +49,5 @@
         }
     </tbody>
 </table>
+
+<Pagination TItem="Customer" Items="CustomersOnPage" ItemsOnPage="_itemsPerPage" CurrentPage="_currentPage" OnPageChanged="HandlePageChanged" />
