@@ -68,51 +68,61 @@
         <div class="bg-info rounded-3">
             <h3>Produktové trendy</h3>
         </div>
-        <div class="col-10">
+        <div class="col-8">
             @GetProductTrendsChart()
         </div>
-        <div class="col-2 card">
-            <table class="table table-hover table-bordered">
-                <thead class="bg-opacity-50" style="background-color: lawngreen">
-                    <tr>
-                        <th scope="row">populární</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in popularProducts)
-                    {
-                    <tr>
-                        <td>@item</td>
-                    </tr>
-                    }
-                </tbody>
-                <thead class="bg-opacity-50" style="background-color: yellow">
-                    <tr>
-                        <th scope="row">neutrální</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in neutralProducts)
-                    {
+        <div class="col-4 card d-flex flex-row">
+            <div class="flex-fill">
+                <table class="table table-hover table-bordered">
+                    <thead class="bg-opacity-50" style="background-color: lawngreen">
+                        <tr>
+                            <th scope="row">populární</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in popularProducts)
+                        {
                         <tr>
                             <td>@item</td>
                         </tr>
-                    }
-                </tbody>
-                <thead class="bg-opacity-50" style="background-color: red">
-                    <tr>
-                        <th scope="row">nepopulární</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in unpopularProducts)
-                    {
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-fill">
+                <table class="table table-hover table-bordered">
+                    <thead class="bg-opacity-50" style="background-color: yellow">
                         <tr>
-                            <td>@item</td>
+                            <th scope="row">neutrální</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in neutralProducts)
+                        {
+                            <tr>
+                                <td>@item</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="flex-fill">
+                <table class="table table-hover table-bordered">
+                    <thead class="bg-opacity-50" style="background-color: red">
+                        <tr>
+                            <th scope="row">nepopulární</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in unpopularProducts)
+                        {
+                            <tr>
+                                <td>@item</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 }

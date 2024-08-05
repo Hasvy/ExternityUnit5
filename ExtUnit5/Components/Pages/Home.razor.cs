@@ -107,7 +107,7 @@ namespace ExtUnit5.Components.Pages
             }
 
             var combinedChart = Chart.Combine(charts)
-                .WithSize(1000, 500)
+                .WithSize(800, 400)
                 .WithXAxisStyle(title: Title.init("Date"))
                 .WithYAxisStyle(title: Title.init("Order Count"));
 
