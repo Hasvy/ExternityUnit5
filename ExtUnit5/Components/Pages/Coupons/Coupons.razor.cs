@@ -27,5 +27,10 @@ namespace ExtUnit5.Components.Pages.Coupons
             await AppDbContext.SaveChangesAsync();
             AllCoupons.Remove(coupon);
         }
+
+        private void HandlePageChanged(int newPageNumber)
+        {
+            _currentPage = newPageNumber;
+        }
     }
 }

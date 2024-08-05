@@ -4,16 +4,20 @@
     <DataAnnotationsValidator />
 
     <div class="form-group">
-        <label for="first-name">Jmeno</label>
-        <InputText id="first-name" class="form-control" @bind-Value="coupon.Code" />
+        <label for="Code">Kód</label>
+        <InputText disabled="true" id="Code" class="form-control" @bind-Value="coupon.Code" />
         <ValidationMessage For="@(() => coupon.Code)" />
+        <button @onclick="GenerateCouponeCode">Vygenerovat kód</button>
     </div>
 
     <div class="form-group">
-        <label for="last-name">Příjmení</label>
+        <label for="Customer">Zákazník</label>
         <InputSelect @bind-Value="SelectedCustomerId">
-            <option value="">None</option>
-            @foreach (var customer in AppDbContext.Customers.OrderBy(c => c.FirstName).ToList())
+            @if (SelectedCustomerId is null)
+            {
+                <option value="">Not selected</option>
+            }
+            @foreach (var customer in GetCustomersWithDiscount())
             {
                 <option value="@customer.Id">@customer</option>
             }
@@ -22,9 +26,12 @@
     </div>
 
     <div class="form-group">
-        <label for="address">Adresa</label>
+        <label for="Product">Produkt</label>
         <InputSelect @bind-Value="SelectedProductId">
-            <option value="">None</option>
+            @if (SelectedProductId is null)
+            {
+                <option value="">Not selected</option>
+            }
             @foreach (var product in AppDbContext.Products.ToList())
             {
                 <option value="@product.Id">@product</option>
@@ -34,15 +41,13 @@
     </div>
 
     <div class="form-group">
-        <label for="phone">Telefonní čislo</label>
-        <InputNumber id="phone" class="form-control" @bind-Value="coupon.Discount" />
-        <ValidationMessage For="@(() => coupon.Discount)" />
+        <label for="Discount">Sleva</label>
+        <span class="badge bg-success">@(Math.Round(coupon.Discount * 100, 0)) %</span>
     </div>
 
     <div class="form-group">
-        <label for="email">Email</label>
-        <InputNumber id="email" class="form-control" @bind-Value="coupon.PriceWithDiscount" />
-        <ValidationMessage For="@(() => coupon.PriceWithDiscount)" />
+        <label for="Price-with-discount">Cena se slevou</label>
+        <span class="badge bg-success">@coupon.PriceWithDiscount</span>
     </div>
 
     <button type="submit" class="btn btn-primary">Uložit</button>

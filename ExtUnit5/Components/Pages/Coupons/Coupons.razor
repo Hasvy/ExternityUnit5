@@ -11,7 +11,7 @@
     <div class="col-sm">
     </div>
     <div class="col-sm d-flex justify-content-end">
-        <button class="btn btn-primary" @onclick="RedirectToAddCoupon">Nový Zákazník</button>
+        <button class="btn btn-primary" @onclick="RedirectToAddCoupon">Nový Kupon</button>
     </div>
 </div>
 
@@ -38,9 +38,6 @@
                 <td>@item.Product</td>
                 <td>@item.Discount</td>
                 <td>@item.PriceWithDiscount</td>
-@*                 <td>
-                    <button class="btn btn-primary" @onclick="@(() => RedirectToEdit(item.Id))">Detail</button>
-                </td> *@
                 <td>
                     <button class="btn btn-danger" @onclick="@(() => DeleteCoupon(item))">Odvolat</button>
                 </td>
@@ -48,3 +45,5 @@
         }
     </tbody>
 </table>
+
+<Pagination TItem="Coupon" Items="AllCoupons" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />

@@ -1,16 +1,16 @@
 ﻿@typeparam TItem
 
-<div>
+<div class="d-flex flex-row justify-content-center">
     <button @onclick="@(() => ChangePage(1))" disabled="@_isFirstPage">First</button>
-    <button @onclick="@(() => ChangePage(CurrentPage - 1))" disabled="@_isFirstPage">Previous</button>
+    <button @onclick="@(() => ChangePage(PageNumber - 1))" disabled="@_isFirstPage">Previous</button>
 
-    <div>
+    <div class="list-group list-group-horizontal mx-3">
         @foreach (var pageNum in PageNumbers)
         {
-            <button @onclick="() => ChangePage(pageNum)">@pageNum</button>
+            <button @onclick="@(() => ChangePage(pageNum))" class="list-group-item @(pageNum == PageNumber ? "active" : "")">@pageNum</button>
         }
     </div>
 
-    <button @onclick="@(() => ChangePage(CurrentPage + 1))" disabled="@_isLastPage">Next</button>
+    <button @onclick="@(() => ChangePage(PageNumber + 1))" disabled="@_isLastPage">Next</button>
     <button @onclick="@(() => ChangePage(TotalPages))" disabled="@_isLastPage">Last</button>
 </div>

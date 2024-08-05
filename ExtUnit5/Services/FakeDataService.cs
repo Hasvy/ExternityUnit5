@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Database;
 using ExtUnit5.Entities;
 using ExtUnit5.Helpers;
 
@@ -83,38 +84,7 @@ namespace ExtUnit5.Services
             CategoryList = _categoryFaker.Generate(CategorySettings.CategoryCount);
             ProductList = _productFaker.Generate(CategorySettings.ProductCount);
             CustomerList = _customerFaker.Generate(CategorySettings.CustomerCount);
-            //OrderItemsList = _orderItemFaker.Generate(CategorySettings.OrderItemsCount);
             OrderList = _orderFaker.Generate(CategorySettings.OrderCount);
         }
-
-        //public List<Category> GetCategories(int count)
-        //{
-        //    CategoryList = _categoryFaker.Generate(count);
-        //    return CategoryList;
-        //}
-
-        //public List<Product> GetProducts(int count)
-        //{
-        //    ProductList = _productFaker.Generate(count);
-        //    return ProductList;
-        //}
-
-        //public List<Customer> GetCustomers(int count)
-        //{
-        //    CustomerList = _customerFaker.Generate(count);
-        //    return CustomerList;
-        //}
-
-        //public List<Order> GetOrders(int count)
-        //{
-        //    OrderList = _orderFaker.Generate(count);
-        //    return OrderList;
-        //}
-
-        //public List<OrderItem> GetOrderItems(int count)
-        //{
-        //    OrderItemsList = _orderItemFaker.Generate(count);
-        //    return OrderItemsList;
-        //}
     }
 }

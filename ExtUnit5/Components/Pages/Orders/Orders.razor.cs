@@ -10,7 +10,6 @@ namespace ExtUnit5.Components.Pages.Orders
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
         private List<Order> AllOrders { get; set; } = new List<Order>();
-        private List<Order> FilteredOrders { get; set; } = new List<Order>();
         private AppDbContext AppDbContext { get; set; } = null!;
 
         private int _currentPage = 1;

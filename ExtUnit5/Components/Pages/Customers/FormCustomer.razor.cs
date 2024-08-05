@@ -23,7 +23,7 @@ namespace ExtUnit5.Components.Pages.Customers
             {
                 int.TryParse(CustomerId, out int customerId);
                 customer = await AppDbContext.Customers.FindAsync(customerId);
-                await base.OnParametersSetAsync();
+                await base.OnInitializedAsync();
             }
         }
 

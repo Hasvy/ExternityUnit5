@@ -48,6 +48,7 @@ namespace ExtUnit5.Entities
     public enum CustomerGroup
     {
         Basic,
+        New,
         Regular,
         VIP
     }

@@ -31,7 +31,6 @@ namespace ExtUnit5.Components.Pages
 
             Orders = AppDbContext.Orders.ToList();
             Customers = AppDbContext.Customers.ToList();
-            ActualizeCustomersGroups();
 
             totalOrdersCount = GetTotalOrdersCount();
             meanOrdersAmount = GetMeanOrdersAmount();
@@ -127,7 +126,7 @@ namespace ExtUnit5.Components.Pages
                 .OrderBy(c => c.Month)
                 .ToList();
 
-            var newCustomersForYear = monthlyGroupedCustomers.Where(g => g.Month.Year == DateTime.Today.AddYears(-1).Year);
+            var newCustomersForYear = monthlyGroupedCustomers.Where(g => g.Month > DateTime.Today.AddMonths(-12));
 
             var newCustomersChart = Chart2D.Chart.Column<int, DateTime, string, string, string> (
                     Keys: newCustomersForYear.Select(g => g.Month).ToList(),
@@ -147,7 +146,7 @@ namespace ExtUnit5.Components.Pages
 
         private int GetNewCustomersCount()
         {
-            return AppDbContext.Customers.Where(c => c.RegistrationDate.Month == DateTime.Today.Month).Count();
+            return AppDbContext.Customers.Where(c => c.RegistrationDate > DateTime.Today.AddMonths(-1)).Count();
         }
 
         private int GetTotalOrdersCount()
@@ -161,14 +160,6 @@ namespace ExtUnit5.Components.Pages
             var roundedSumAmount = Math.Round((float)sumAmount / totalOrdersCount, 2);
             return (float)roundedSumAmount;
         }
-
-        //private float GetMeanOrdersValuePerMonth()
-        //{
-        //    var totalOrdersNumber = AppDbContext.Orders.Count();
-        //    var numberOfMonths = 12;//AppDbContext.Orders.Sum(g => g.OrderDate.Month);
-        //    var meanOrdersValueDecimal = Math.Round((float)totalOrdersNumber / numberOfMonths, 1);
-        //    return (float)meanOrdersValueDecimal;
-        //}
 
         private int GetRegularCustomersCount()
         {
@@ -199,34 +190,6 @@ namespace ExtUnit5.Components.Pages
                         unpopularProducts.Add(product.ProductName);
                 }
             }
-        }
-
-        private void ActualizeCustomersGroups()             //This process should be performed after order is finished, but we don't have this feature yet
-        {
-            Dictionary<Customer, decimal> customersDict = new Dictionary<Customer, decimal>();
-            foreach (var customer in AppDbContext.Customers.ToList())
-            {
-                customersDict.Add(customer, customer.Orders.Where(o => o.Status == OrderStatus.Finished).Sum(o => o.TotalAmount));
-            }
-            var sortedCustomersDict = customersDict.OrderByDescending(c => c.Value);
-            var indexOftreshold = (int)(0.10 * sortedCustomersDict.Count());
-            var treshold = sortedCustomersDict.ToArray()[indexOftreshold].Value;
-            foreach (var customer in AppDbContext.Customers.ToList())
-            {
-                if (customer.Orders.Where(o => o.Status == OrderStatus.Finished).Sum(o => o.TotalAmount) > treshold)
-                {
-                    customer.CustomerGroup = CustomerGroup.VIP;
-                    continue;
-                }
-
-                bool boughtInLastMonth = customer.Orders.ToList().Exists(o => o.OrderDate.Month == DateTime.Now.AddMonths(-1).Month);
-                bool boughtInPreLastMonth = customer.Orders.ToList().Exists(o => o.OrderDate.Month == DateTime.Now.AddMonths(-2).Month);
-                if (boughtInLastMonth && boughtInPreLastMonth)
-                {
-                    customer.CustomerGroup = CustomerGroup.Regular;
-                }
-            }
-            AppDbContext.SaveChanges();
         }
     }
 }
