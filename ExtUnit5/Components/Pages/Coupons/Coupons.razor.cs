@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExtUnit5.Components.Pages.Coupons
 {
-    public partial class Coupons : ComponentBase
+    public partial class Coupons : ComponentBase, IDisposable
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
@@ -15,6 +15,13 @@ namespace ExtUnit5.Components.Pages.Coupons
 
         private int _currentPage = 1;
         private int _itemsPerPage = 10;
+
+        protected override Task OnInitializedAsync()
+        {
+            AppDbContext = DbContextFactory.CreateDbContext();
+            AllCoupons = AppDbContext.Coupons.ToList();
+            return base.OnInitializedAsync();
+        }
 
         private void RedirectToAddCoupon()
         {
@@ -31,6 +38,11 @@ namespace ExtUnit5.Components.Pages.Coupons
         private void HandlePageChanged(int newPageNumber)
         {
             _currentPage = newPageNumber;
+        }
+
+        public void Dispose()
+        {
+            AppDbContext.Dispose();
         }
     }
 }

@@ -11,10 +11,11 @@ namespace ExtUnit5.Entities
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Kód je povinný")]
-        public string Code { get; set; }
+        public string Code { get; set; } = null!;
 
         [Required(ErrorMessage = "Zákazník je povinný")]
         public virtual Customer Customer { get; set; } = null!;
+        [Required(ErrorMessage = "Produkt je povinný")]
         public virtual Product Product { get; set; } = null!;
         public float Discount { get; set; }
         public float PriceWithDiscount { get; set; }

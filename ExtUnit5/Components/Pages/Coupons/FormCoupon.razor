@@ -3,16 +3,21 @@
 <EditForm FormName="@FormName" Model="@coupon" OnValidSubmit="Submit">
     <DataAnnotationsValidator />
 
-    <div class="form-group">
-        <label for="Code">Kód</label>
-        <InputText disabled="true" id="Code" class="form-control" @bind-Value="coupon.Code" />
+    <div class="form-group my-2">
+        <div class="d-flex flex-row">
+            <label class="align-content-center me-2" for="Code">Kód</label>
+            <div id="Code" class="form-control w-25">
+                @coupon.Code
+            </div>
+            <button type="button" class="btn btn-primary ms-2" @onclick="GenerateCouponeCode">Vygenerovat kód</button>
+        </div>
+        <div class="alert-danger">@errorMessage</div>
         <ValidationMessage For="@(() => coupon.Code)" />
-        <button @onclick="GenerateCouponeCode">Vygenerovat kód</button>
     </div>
 
-    <div class="form-group">
+    <div class="form-group my-2">
         <label for="Customer">Zákazník</label>
-        <InputSelect @bind-Value="SelectedCustomerId">
+        <InputSelect class="btn border" @bind-Value="SelectedCustomerId">
             @if (SelectedCustomerId is null)
             {
                 <option value="">Not selected</option>
@@ -25,9 +30,9 @@
         <ValidationMessage For="@(() => coupon.Customer)" />
     </div>
 
-    <div class="form-group">
+    <div class="form-group my-2">
         <label for="Product">Produkt</label>
-        <InputSelect @bind-Value="SelectedProductId">
+        <InputSelect class="btn border" @bind-Value="SelectedProductId">
             @if (SelectedProductId is null)
             {
                 <option value="">Not selected</option>
@@ -40,12 +45,12 @@
         <ValidationMessage For="@(() => coupon.Product)" />
     </div>
 
-    <div class="form-group">
+    <div class="form-group my-2">
         <label for="Discount">Sleva</label>
         <span class="badge bg-success">@(Math.Round(coupon.Discount * 100, 0)) %</span>
     </div>
 
-    <div class="form-group">
+    <div class="form-group my-2">
         <label for="Price-with-discount">Cena se slevou</label>
         <span class="badge bg-success">@coupon.PriceWithDiscount</span>
     </div>

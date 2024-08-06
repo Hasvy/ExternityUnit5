@@ -1,5 +1,6 @@
 ﻿using Database;
 using ExtUnit5.Entities;
+using ExtUnit5.Services;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
@@ -10,11 +11,14 @@ namespace ExtUnit5.Components.Pages.Coupons
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
+        [Inject] CodeGeneratorService CodeGenerator { get; set; } = null!;
         [Parameter] public string FormName { get; set; } = null!;
 
         private AppDbContext AppDbContext { get; set; } = null!;
 
         private Coupon coupon = new Coupon();
+        private List<string> couponCodes = new List<string>();
+        private string errorMessage = string.Empty;
 
         private int? SelectedCustomerId
         {
@@ -46,6 +50,7 @@ namespace ExtUnit5.Components.Pages.Coupons
         protected override async Task OnInitializedAsync()
         {
             AppDbContext = DbContextFactory.CreateDbContext();
+            couponCodes = AppDbContext.Coupons.Select(c => c.Code).ToList();
             await base.OnInitializedAsync();
         }
 
@@ -56,7 +61,19 @@ namespace ExtUnit5.Components.Pages.Coupons
 
         private void GenerateCouponeCode()
         {
+            int attempts = 0;
+            int maxAttempts = 5;
+            errorMessage = string.Empty;
 
+            do
+            {
+                coupon.Code = CodeGenerator.GenerateCode(12);
+            } while (couponCodes.Contains(coupon.Code) && attempts < maxAttempts);
+
+            if (attempts >= maxAttempts)
+            {
+                errorMessage = "Failed to generate a unique code after several attempts.";
+            }
         }
 
         private float GetCouponDiscount()
@@ -79,10 +96,10 @@ namespace ExtUnit5.Components.Pages.Coupons
             return (float)Math.Round(coupon.Product.Price - (coupon.Product.Price * coupon.Discount), 2);
         }
 
-        private async Task Submit()
+        private void Submit()
         {
             AppDbContext.Coupons.Add(coupon);
-            await AppDbContext.SaveChangesAsync();
+            AppDbContext.SaveChanges();
             NavigationManager.NavigateTo("/coupons");
         }
 

@@ -27,32 +27,22 @@ namespace ExtUnit5.Components.Pages.Customers
             }
         }
 
-        private async Task Submit()
+        private void Submit()
         {
-            if (CustomerId is not null)
+            if (customer is not null)
             {
-                AppDbContext.Customers.Update(customer);
+                if (CustomerId is not null)
+                {
+                    AppDbContext.Customers.Update(customer);
+                }
+                else
+                {
+                    AppDbContext.Customers.Add(customer);
+                }
             }
-            else
-            {
-                AppDbContext.Customers.Add(customer);
-            }
-            await AppDbContext.SaveChangesAsync();
+            AppDbContext.SaveChanges();
             NavigationManager.NavigateTo("/customers");
-            //if (IsEmailUnique(customer!.Email))
-            //{
-
-            //}
-            //else
-            //{
-
-            //}
         }
-
-        //private bool IsEmailUnique(string email)
-        //{
-        //    return AppDbContext.Customers.FirstOrDefault(c => c.Email == email) == (null) ? true : false;
-        //}
 
         public void Dispose()
         {

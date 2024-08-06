@@ -18,6 +18,8 @@ builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseLazyLoa
     .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddSingleton<EmailService>();
+builder.Services.AddSingleton<CodeGeneratorService>();
 builder.Services.AddSingleton<FakeDataService>();
 
 var app = builder.Build();
