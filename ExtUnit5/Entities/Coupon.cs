@@ -19,5 +19,6 @@ namespace ExtUnit5.Entities
         public virtual Product Product { get; set; } = null!;
         public float Discount { get; set; }
         public float PriceWithDiscount { get; set; }
+        public DateTime ExpireDate { get; set; } = DateTime.Now.AddDays(1).Date;
     }
 }

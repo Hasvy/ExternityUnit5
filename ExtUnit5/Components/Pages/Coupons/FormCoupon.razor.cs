@@ -46,8 +46,22 @@ namespace ExtUnit5.Components.Pages.Coupons
             }
         }
 
+        private int ExpireInDays
+        {
+            get => _expireInDays;
+            set
+            {
+                _expireInDays = value;
+                if (_expireInDays > 0)
+                {
+                    coupon.ExpireDate = DateTime.Now.AddDays(_expireInDays).Date;
+                }
+            }
+        }
+
         private int? _selectedCustomerId;
         private int? _selectedProductId;
+        private int _expireInDays = 1;
 
         protected override async Task OnInitializedAsync()
         {

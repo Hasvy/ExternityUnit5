@@ -24,7 +24,7 @@
             <th scope="col">Produkt</th>
             <th scope="col">Sleva</th>
             <th scope="col">Cena se slevou</th>
-            <th scope="col" style="width:10px"></th>
+            <th scope="col">Je platný do</th>
             <th scope="col" style="width:10px"></th>
         </tr>
     </thead>
@@ -38,6 +38,7 @@
                 <td>@item.Product</td>
                 <td>@item.Discount</td>
                 <td>@item.PriceWithDiscount</td>
+                <td>@item.ExpireDate</td>
                 <td>
                     <button class="btn btn-danger" @onclick="@(() => DeleteCoupon(item))">Odvolat</button>
                 </td>

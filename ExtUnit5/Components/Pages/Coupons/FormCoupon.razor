@@ -46,6 +46,12 @@
     </div>
 
     <div class="form-group my-2">
+        <label for="ExpireDate">Doba platnosti ve dnech</label>
+        <InputNumber min="1" max="999" class="form-control" style="width: 75px" @bind-Value="ExpireInDays"/>
+        <ValidationMessage For="@(() => coupon.ExpireDate)"/>
+    </div>
+
+    <div class="form-group my-2">
         <label for="Discount">Sleva</label>
         <span class="badge bg-success">@(Math.Round(coupon.Discount * 100, 0)) %</span>
     </div>
@@ -53,6 +59,11 @@
     <div class="form-group my-2">
         <label for="Price-with-discount">Cena se slevou</label>
         <span class="badge bg-success">@coupon.PriceWithDiscount</span>
+    </div>
+
+    <div class="form-group my-2">
+        <label for="Expire-date">Kupon je platný do</label>
+        <span class="badge bg-success">@coupon.ExpireDate</span>
     </div>
 
     <button type="submit" class="btn btn-primary">Uložit</button>
