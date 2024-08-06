@@ -12,6 +12,10 @@ namespace ExtUnit5.Components.Pages.ProductPages
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
         private List<Product> AllProducts { get; set; } = new List<Product>();
         private AppDbContext AppDbContext { get; set; } = null!;
+        private List<Product> ProductsOnPage => AllProducts.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
+
+        private int _currentPage = 1;
+        private int _itemsPerPage = 10;
 
         protected override Task OnInitializedAsync()
         {
@@ -34,6 +38,11 @@ namespace ExtUnit5.Components.Pages.ProductPages
             AppDbContext.Products.Remove(product);
             await AppDbContext.SaveChangesAsync();
             AllProducts.Remove(product);
+        }
+
+        private void HandlePageChanged(int newPageNumber)
+        {
+            _currentPage = newPageNumber;
         }
 
         public void Dispose()

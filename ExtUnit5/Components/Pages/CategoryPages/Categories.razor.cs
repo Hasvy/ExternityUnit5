@@ -13,6 +13,11 @@ namespace ExtUnit5.Components.Pages.CategoryPages
         private List<Category> AllCategories { get; set; } = new List<Category>();
         private AppDbContext AppDbContext { get; set; } = null!;
 
+        private List<Category> CategoriesOnPage => AllCategories.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
+
+        private int _currentPage = 1;
+        private int _itemsPerPage = 10;
+
         protected override Task OnInitializedAsync()
         {
             AppDbContext = DbContextFactory.CreateDbContext();
@@ -35,6 +40,11 @@ namespace ExtUnit5.Components.Pages.CategoryPages
             AppDbContext.Categories.Remove(category);
             await AppDbContext.SaveChangesAsync();
             AllCategories.Remove(category);
+        }
+
+        private void HandlePageChanged(int newPageNumber)
+        {
+            _currentPage = newPageNumber;
         }
 
         public void Dispose()

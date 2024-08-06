@@ -1,6 +1,7 @@
 ﻿using Database;
 using ExtUnit5.Entities;
 using ExtUnit5.Services;
+using Mailhog;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
@@ -12,6 +13,7 @@ namespace ExtUnit5.Components.Pages.Coupons
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
         [Inject] CodeGeneratorService CodeGenerator { get; set; } = null!;
+        [Inject] EmailService EmailService { get; set; } = null!;
         [Parameter] public string FormName { get; set; } = null!;
 
         private AppDbContext AppDbContext { get; set; } = null!;
@@ -96,10 +98,11 @@ namespace ExtUnit5.Components.Pages.Coupons
             return (float)Math.Round(coupon.Product.Price - (coupon.Product.Price * coupon.Discount), 2);
         }
 
-        private void Submit()
+        private async Task Submit()
         {
             AppDbContext.Coupons.Add(coupon);
             AppDbContext.SaveChanges();
+            await EmailService.SendEmailAsync(coupon.Customer.Email, "Discount coupon", "You have new discount coupon on ecommerce shop!");
             NavigationManager.NavigateTo("/coupons");
         }
 
