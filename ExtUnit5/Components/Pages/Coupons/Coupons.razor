@@ -47,4 +47,7 @@
     </tbody>
 </table>
 
-<Pagination TItem="Coupon" Items="AllCoupons" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />
+@if (AllCoupons.Count > 10)
+{
+    <Pagination TItem="Coupon" Items="AllCoupons" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />
+}

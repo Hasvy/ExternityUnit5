@@ -1,6 +1,18 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Microsoft.AspNetCore.Components.Authorization
+
+<div class="top-row ps-3 navbar navbar-dark fl">
     <div class="container-fluid">
         <a class="navbar-brand" href="">E-shop</a>
+    </div>
+    <div class="container-fluid">
+        <AuthorizeView>
+            <Authorized>
+                <p>Hello, @context.User.Identity?.Name!</p>
+            </Authorized>
+            <NotAuthorized>
+                <p class="text-white" style="font-size: 11px">You're not authorized.</p>
+            </NotAuthorized>
+        </AuthorizeView>
     </div>
 </div>
 

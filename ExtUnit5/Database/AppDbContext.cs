@@ -1,10 +1,12 @@
 ﻿using ExtUnit5;
 using ExtUnit5.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Database
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<IdentityUser>
     {
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }

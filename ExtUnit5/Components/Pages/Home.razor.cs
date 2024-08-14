@@ -10,8 +10,8 @@ namespace ExtUnit5.Components.Pages
     public partial class Home : ComponentBase
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
-        private List<Order> Orders { get; set; } = new List<Order>();
-        private List<Customer> Customers { get; set; } = new List<Customer>();
+        public List<Order> Orders { get; set; } = new List<Order>();
+        public List<Customer> Customers { get; set; } = new List<Customer>();
 
         private AppDbContext AppDbContext { get; set; } = null!;
         private float avgOrdersValue;

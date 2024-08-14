@@ -16,13 +16,7 @@ namespace ExtUnit5.Components.Pages.Coupons
         [Inject] EmailService EmailService { get; set; } = null!;
         [Parameter] public string FormName { get; set; } = null!;
 
-        private AppDbContext AppDbContext { get; set; } = null!;
-
-        private Coupon coupon = new Coupon();
-        private List<string> couponCodes = new List<string>();
-        private string errorMessage = string.Empty;
-
-        private int? SelectedCustomerId
+        public int? SelectedCustomerId
         {
             get => _selectedCustomerId;
             set
@@ -35,7 +29,7 @@ namespace ExtUnit5.Components.Pages.Coupons
             }
         }
 
-        private int? SelectedProductId
+        public int? SelectedProductId
         {
             get => _selectedProductId;
             set
@@ -46,7 +40,7 @@ namespace ExtUnit5.Components.Pages.Coupons
             }
         }
 
-        private int ExpireInDays
+        public int ExpireInDays
         {
             get => _expireInDays;
             set
@@ -59,6 +53,10 @@ namespace ExtUnit5.Components.Pages.Coupons
             }
         }
 
+        private AppDbContext AppDbContext { get; set; } = null!;
+        private Coupon coupon = new Coupon();
+        private List<string> couponCodes = new List<string>();
+        private string errorMessage = string.Empty;
         private int? _selectedCustomerId;
         private int? _selectedProductId;
         private int _expireInDays = 1;
@@ -116,7 +114,7 @@ namespace ExtUnit5.Components.Pages.Coupons
         {
             AppDbContext.Coupons.Add(coupon);
             AppDbContext.SaveChanges();
-            await EmailService.SendEmailAsync(coupon.Customer.Email, "Discount coupon", "You have new discount coupon on ecommerce shop!");
+            //await EmailService.SendEmailAsync(coupon.Customer.Email, "Discount coupon", "You have new discount coupon on ecommerce shop!");
             NavigationManager.NavigateTo("/coupons");
         }
 

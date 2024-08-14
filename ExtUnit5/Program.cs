@@ -3,7 +3,11 @@ using Database;
 using ExtUnit5.Components;
 using ExtUnit5.Database;
 using ExtUnit5.Entities;
+using ExtUnit5.Security;
 using ExtUnit5.Services;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -18,14 +22,32 @@ builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseLazyLoa
     .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
+{
+    options.SignIn.RequireConfirmedAccount = false;
+    options.SignIn.RequireConfirmedPhoneNumber = false;
+    options.SignIn.RequireConfirmedEmail = false;
+    options.Lockout.AllowedForNewUsers = false;
+    options.User.AllowedUserNameCharacters =
+        @"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+\/\\";
+})
+    .AddRoles<IdentityRole>()
+    .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddEntityFrameworkStores<AppDbContext>();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = IISDefaults.AuthenticationScheme;
+});
+
+builder.Services.AddAuthorization();
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<CodeGeneratorService>();
 builder.Services.AddSingleton<FakeDataService>();
+builder.Services.AddSingleton<UserService>();
+builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider<IdentityUser>>();
 
 var app = builder.Build();
-
-//var scope = app.Services.CreateScope();
-
 
 using (var scope = app.Services.CreateScope())
 {
@@ -46,9 +68,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 app.UseAntiforgery();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
