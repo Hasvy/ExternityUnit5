@@ -21,25 +21,19 @@ namespace ExtUnit5.Security
 
         private static ClaimsPrincipal AnonymousPrincipal => new ClaimsPrincipal(new ClaimsIdentity(Array.Empty<Claim>(), string.Empty));
 
+        protected override TimeSpan RevalidationInterval => TimeSpan.FromSeconds(60);
+
         public override async Task<AuthenticationState> GetAuthenticationStateAsync()
         {
             var state = await base.GetAuthenticationStateAsync();
             var dbContext = await _dbContextFactory.CreateDbContextAsync();
 
-            if (state == null)
+            if (!await ValidateAuthenticationStateAsync(state, CancellationToken.None))
             {
-                return new AuthenticationState(AnonymousPrincipal);
-            }
-            else
-            {
-                var userId = state.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                if (userId != null && dbContext.Users.Any(u => u.Id == userId))
-                {
-                    return state;
-                }
+                return await Task.FromResult(new AuthenticationState(AnonymousPrincipal));
             }
 
-            return state;
+            return await Task.FromResult(new AuthenticationState(state.User));
         }
 
         protected override async Task<bool> ValidateAuthenticationStateAsync(AuthenticationState authenticationState, CancellationToken cancellationToken)
@@ -51,7 +45,5 @@ namespace ExtUnit5.Security
 
             return false;
         }
-
-        protected override TimeSpan RevalidationInterval => TimeSpan.FromSeconds(60);
     }
 }
