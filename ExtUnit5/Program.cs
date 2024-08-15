@@ -33,7 +33,8 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddRoleManager<RoleManager<IdentityRole>>()
-    .AddEntityFrameworkStores<AppDbContext>();
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
 {
@@ -55,8 +56,10 @@ using (var scope = app.Services.CreateScope())
     context.Database.EnsureDeleted();
     context.Database.EnsureCreated();
     var seeder = new Seeder(scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>(),
-                            scope.ServiceProvider.GetRequiredService<FakeDataService>());
-    seeder.SeedDatabase();
+                            scope.ServiceProvider.GetRequiredService<FakeDataService>(),
+                            scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>(),
+                            scope.ServiceProvider.GetRequiredService<SignInManager<IdentityUser>>());
+    await seeder.SeedDatabase();
 }
 
 // Configure the HTTP request pipeline.
