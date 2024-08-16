@@ -50,4 +50,7 @@
     </tbody>
 </table>
 
-<Pagination TItem="Customer" Items="AllCustomers" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />
+@if (AllCustomers.Count > 10)
+{
+    <Pagination TItem="Customer" Items="AllCustomers" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />
+}

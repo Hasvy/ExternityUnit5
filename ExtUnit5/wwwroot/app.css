@@ -62,3 +62,11 @@ h1:focus {
     border: solid black 3px; 
     border-radius: 4px;
 }
+
+.navbar-user {
+    color: white;
+    font-size: 1.1rem;
+    margin: 0px;
+    padding-top: .3125rem;
+    padding-bottom: .3125rem;
+}

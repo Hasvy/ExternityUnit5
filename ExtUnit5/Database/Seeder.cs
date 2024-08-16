@@ -11,27 +11,26 @@ namespace ExtUnit5.Database
         private IDbContextFactory<AppDbContext> _dbContextFactory;
         private FakeDataService _dataService;
         private UserManager<IdentityUser> _userManager;
-        private SignInManager<IdentityUser> _signInManager;
+        private IConfiguration _configuration;
 
-        public Seeder(IDbContextFactory<AppDbContext> dbContextFactory, FakeDataService dataService, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public Seeder(IDbContextFactory<AppDbContext> dbContextFactory, FakeDataService dataService, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {
             _dbContextFactory = dbContextFactory;
             _dataService = dataService;
             _userManager = userManager;
-            _signInManager = signInManager;
+            _configuration = configuration;
         }
 
         public async Task SeedDatabase()
         {
-            await _userManager.CreateAsync(new IdentityUser("admin"), "admin123");
-            IdentityUser? admin = await _userManager.FindByNameAsync("admin");
-            if (admin != null)
-                await _signInManager.SignInAsync(admin, isPersistent: true);
+            string? userName = _configuration["UserSettings:UserName"];
+
+            if (userName != null)
+                await _userManager.CreateAsync(new IdentityUser(userName));
 
             _dataService.Init();
             using (var context = _dbContextFactory.CreateDbContext())
             {
-                admin = context.Users.FirstOrDefault(u => u.UserName == "admin");
                 context.Categories.AddRange(_dataService.CategoryList);
                 context.Products.AddRange(_dataService.ProductList);
                 context.Customers.AddRange(_dataService.CustomerList);

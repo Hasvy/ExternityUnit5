@@ -1,16 +1,12 @@
-using Bogus;
 using Database;
 using ExtUnit5.Components;
 using ExtUnit5.Database;
-using ExtUnit5.Entities;
 using ExtUnit5.Security;
 using ExtUnit5.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,7 +41,6 @@ builder.Services.AddAuthorization();
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<CodeGeneratorService>();
 builder.Services.AddSingleton<FakeDataService>();
-builder.Services.AddSingleton<UserService>();
 builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider<IdentityUser>>();
 
 var app = builder.Build();
@@ -58,7 +53,7 @@ using (var scope = app.Services.CreateScope())
     var seeder = new Seeder(scope.ServiceProvider.GetRequiredService<IDbContextFactory<AppDbContext>>(),
                             scope.ServiceProvider.GetRequiredService<FakeDataService>(),
                             scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>(),
-                            scope.ServiceProvider.GetRequiredService<SignInManager<IdentityUser>>());
+                            builder.Configuration);
     await seeder.SeedDatabase();
 }
 

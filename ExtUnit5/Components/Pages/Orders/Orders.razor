@@ -47,4 +47,7 @@
     </tbody>
 </table>
 
-<Pagination TItem="Order" Items="AllOrders" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />
+@if (AllOrders.Count > 10)
+{
+    <Pagination TItem="Order" Items="AllOrders" PageSize="_itemsPerPage" PageNumber="_currentPage" OnPageChanged="HandlePageChanged" />
+}
