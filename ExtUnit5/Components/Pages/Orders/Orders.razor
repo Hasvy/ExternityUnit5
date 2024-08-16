@@ -5,15 +5,20 @@
 
 <h3>Orders</h3>
 
-<input type="text" @bind="CustomerFilter" @bind:event="oninput" />
+<div class="d-flex">
+    <div class="d-flex align-items-center">
+        <label for="Search">Vyhledat: </label>
+        <input id="Search" class="form-control w-auto ms-2" type="text" @bind="CustomerFilter" @bind:event="oninput" />
+    </div>
 
-<select @bind="SelectedStatus">
-    <option value="">All</option>
-    @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
-    {
-        <option value="@status">@status</option>
-    }
-</select>
+    <select class="btn border ms-2" @bind="SelectedStatus">
+        <option value="">All</option>
+        @foreach (var status in Enum.GetValues(typeof(OrderStatus)))
+        {
+            <option value="@status">@status</option>
+        }
+    </select>
+</div>
 
 <table class="table table-hover">
     <thead>

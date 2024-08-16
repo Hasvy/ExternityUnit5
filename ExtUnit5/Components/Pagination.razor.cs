@@ -16,7 +16,21 @@ namespace ExtUnit5.Components
         private bool _isFirstPage => PageNumber == 1;
         private bool _isLastPage => PageNumber == TotalPages;
 
-        private IEnumerable<int> PageNumbers => Enumerable.Range(1, TotalPages);
+        private IEnumerable<int> PageNumbers
+        {
+            get
+            {
+                int startPage = Math.Max(1, PageNumber - 5);        //Centered
+                int endPage = Math.Min(TotalPages, startPage + 9);
+
+                if (endPage == TotalPages && endPage - startPage < 9)
+                {
+                    startPage = Math.Max(1, endPage - 9);
+                }
+
+                return Enumerable.Range(startPage, endPage - startPage + 1);
+            }
+        }
 
         private void ChangePage(int page)
         {

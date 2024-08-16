@@ -27,6 +27,10 @@
                 <option value="@customer.Id">@customer</option>
             }
         </InputSelect>
+        @if (SelectedCustomerId is not null)
+        {
+            <span class="badge bg-success ms-2">@coupon.Customer.CustomerGroup</span>
+        }
         <ValidationMessage For="@(() => coupon.Customer)" />
     </div>
 
@@ -45,9 +49,9 @@
         <ValidationMessage For="@(() => coupon.Product)" />
     </div>
 
-    <div class="form-group my-2">
+    <div class="form-group my-2 d-flex align-items-center">
         <label for="ExpireDate">Doba platnosti ve dnech</label>
-        <InputNumber min="1" max="999" class="form-control" style="width: 75px" @bind-Value="ExpireInDays"/>
+        <InputNumber min="1" max="999" class="form-control ms-2" style="width: 75px" @bind-Value="ExpireInDays"/>
         <ValidationMessage For="@(() => coupon.ExpireDate)"/>
     </div>
 

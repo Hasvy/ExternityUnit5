@@ -14,6 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
+builder.Configuration.AddJsonFile("appsettings.Local.json");
+
 builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseLazyLoadingProxies()
     .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
