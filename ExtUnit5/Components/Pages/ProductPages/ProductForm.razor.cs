@@ -9,7 +9,7 @@ namespace ExtUnit5.Components.Pages.ProductPages
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Parameter] public string? ProductId { get; set; }
+        [Parameter] public int? ProductId { get; set; }
         [Parameter] public string FormName { get; set; } = null!;
         private AppDbContext AppDbContext { get; set; } = null!;
         public int? SelectedCategoryId
@@ -31,11 +31,11 @@ namespace ExtUnit5.Components.Pages.ProductPages
             allCategories = await AppDbContext.Categories.ToListAsync();
             if (ProductId is not null)
             {
-                int.TryParse(ProductId, out int productId);
-                var foundedProduct = await AppDbContext.Products.FindAsync(productId);
-                if (foundedProduct is not null)
+                //int.TryParse(ProductId, out int productId);
+                var product = await AppDbContext.Products.FindAsync(ProductId);
+                if (product is not null)
                 {
-                    product = foundedProduct;
+                    this.product = product;
                     SelectedCategoryId = product.Category.Id;
                 }
                 else
@@ -61,6 +61,7 @@ namespace ExtUnit5.Components.Pages.ProductPages
         public void Dispose()
         {
             AppDbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -6,8 +6,7 @@ namespace ExtUnit5.Validation
 {
     public class UniqueEmail : ValidationAttribute
     {
-
-        protected override ValidationResult IsValid(object value, ValidationContext validationContext)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             var context = validationContext.GetRequiredService<AppDbContext>();
             if (value is string && !string.IsNullOrEmpty(value.ToString()))

@@ -12,8 +12,8 @@ namespace ExtUnit5.Components.Pages.Orders
         private List<Order> AllOrders { get; set; } = new List<Order>();
         private AppDbContext AppDbContext { get; set; } = null!;
 
+        private readonly int _itemsPerPage = 10;
         private int _currentPage = 1;
-        private int _itemsPerPage = 10;
         private List<Order> OrdersOnPage => AllOrders.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
 
         private string? CustomerFilter 
@@ -74,6 +74,7 @@ namespace ExtUnit5.Components.Pages.Orders
         public void Dispose()
         {
             AppDbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

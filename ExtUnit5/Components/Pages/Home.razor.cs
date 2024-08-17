@@ -90,7 +90,7 @@ namespace ExtUnit5.Components.Pages
                         .OrderBy(d => d.Month)
                         .ToList()
                 })
-                .OrderByDescending(g => g.DatesOrdered.Count())
+                .OrderByDescending(g => g.DatesOrdered.Count)
                 .ToList();
 
             GroupProductsByPopularity(groupedProducts);

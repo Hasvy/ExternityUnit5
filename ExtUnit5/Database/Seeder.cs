@@ -8,10 +8,10 @@ namespace ExtUnit5.Database
 {
     public class Seeder
     {
-        private IDbContextFactory<AppDbContext> _dbContextFactory;
-        private FakeDataService _dataService;
-        private UserManager<IdentityUser> _userManager;
-        private IConfiguration _configuration;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
+        private readonly FakeDataService _dataService;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _configuration;
 
         public Seeder(IDbContextFactory<AppDbContext> dbContextFactory, FakeDataService dataService, UserManager<IdentityUser> userManager, IConfiguration configuration)
         {

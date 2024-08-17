@@ -8,33 +8,32 @@ namespace ExtUnit5.Components.Pages.Orders
     public partial class OrderDetail : ComponentBase, IDisposable
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
-        [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Parameter] public string? OrderId { get; set; }
+        [Parameter] public int? OrderId { get; set; }
         private AppDbContext AppDbContext { get; set; } = null!;
         private List<OrderItem> orderItems = new List<OrderItem>();
         private Customer customer = new Customer();
 
-        protected override Task OnInitializedAsync()
+        protected override async Task OnInitializedAsync()
         {
             AppDbContext = DbContextFactory.CreateDbContext();
             if (OrderId is not null)
             {
-                int.TryParse(OrderId, out int orderId);
-                var order = AppDbContext.Orders.Find(orderId);
+                //int.TryParse(OrderId, out int orderId);
+                var order = await AppDbContext.Orders.FindAsync(OrderId);
 
                 if (order is not null)
                 {
                     orderItems = order.OrderItems.ToList();
                     customer = order.Customer;
                 }
-
             }
-            return base.OnInitializedAsync();
+            await base.OnInitializedAsync();
         }
 
         public void Dispose()
         {
             AppDbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

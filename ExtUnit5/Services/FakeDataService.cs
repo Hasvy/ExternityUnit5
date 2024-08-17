@@ -10,7 +10,7 @@ namespace ExtUnit5.Services
         public static int CategoryCount = 3;
         public static int ProductCount = 10;
         public static int CustomerCount = 50;    //50
-        public static int OrderCount = 110;      //200
+        public static int OrderCount = 112;      //200
         //public static int OrderItemsCount = 50;
     }
 

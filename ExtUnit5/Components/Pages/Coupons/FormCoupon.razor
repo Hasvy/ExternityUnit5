@@ -6,7 +6,7 @@
     <div class="form-group my-2">
         <div class="d-flex flex-row">
             <label class="align-content-center me-2" for="Code">Kód</label>
-            <div id="Code" class="form-control w-25">
+            <div id="Code" class="form-control" style="width: 200px">
                 @coupon.Code
             </div>
             <button type="button" class="btn btn-primary ms-2" @onclick="GenerateCouponeCode">Vygenerovat kód</button>
@@ -55,9 +55,24 @@
         <ValidationMessage For="@(() => coupon.ExpireDate)"/>
     </div>
 
-    <div class="form-group my-2">
+    <div class="d-flex">
+        <label class="d-flex align-items-center me-2">Částka: </label>
+        <div class="btn-group btn-group-toggle" data-toggle="buttons">
+            <button type="button" class="btn btn-outline-success @(IsFixedAmount == false ? "active" : "")" @onclick="@(() => IsFixedAmount = false)" checked="!IsFixedAmount">Procentní</button>
+            <button type="button" class="btn btn-outline-success @(IsFixedAmount == true ? "active" : "")" @onclick="@(() => IsFixedAmount = true)" checked="IsFixedAmount">Fixní</button>
+        </div>
+    </div>
+
+    <div class="form-group d-flex my-2">
         <label for="Discount">Sleva</label>
-        <span class="badge bg-success">@(Math.Round(coupon.Discount * 100, 0)) %</span>
+        @if (IsFixedAmount is true)
+        {
+            <InputNumber min="1" class="form-control ms-2" style="width: 150px" @bind-Value="Discount" />
+        }
+        else
+        {
+            <span class="badge bg-success">@(Math.Round(coupon.Discount * 100, 0)) %</span>
+        }
     </div>
 
     <div class="form-group my-2">

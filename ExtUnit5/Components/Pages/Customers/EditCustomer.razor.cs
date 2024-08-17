@@ -7,6 +7,6 @@ namespace ExtUnit5.Components.Pages.Customers
 {
     public partial class EditCustomer : ComponentBase
     {
-        [Parameter] public string? CustomerId { get; set; }
+        [Parameter] public int? CustomerId { get; set; }
     }
 }

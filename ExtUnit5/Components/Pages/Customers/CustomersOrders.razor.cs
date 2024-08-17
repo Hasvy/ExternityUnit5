@@ -10,7 +10,7 @@ namespace ExtUnit5.Components.Pages.Customers
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         //[Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Parameter] public string? CustomerId { get; set; }
+        [Parameter] public int? CustomerId { get; set; }
         private AppDbContext AppDbContext { get; set; } = null!;
         private Customer? customer = new Customer();
 
@@ -19,8 +19,8 @@ namespace ExtUnit5.Components.Pages.Customers
             AppDbContext = DbContextFactory.CreateDbContext();
             if (CustomerId is not null)
             {
-                int.TryParse(CustomerId, out int customerId);
-                customer = AppDbContext.Customers.Find(customerId);
+                //int.TryParse(CustomerId, out int customerId);
+                customer = AppDbContext.Customers.Find(CustomerId);
             }
             return base.OnInitializedAsync();
         }

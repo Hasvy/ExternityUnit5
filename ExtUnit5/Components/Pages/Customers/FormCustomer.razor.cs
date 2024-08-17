@@ -9,11 +9,11 @@ namespace ExtUnit5.Components.Pages.Customers
     {
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
-        [Parameter] public string? CustomerId { get; set; }
+        [Parameter] public int? CustomerId { get; set; }
         [Parameter] public string FormName { get; set; } = null!;
 
         private AppDbContext AppDbContext { get; set; } = null!;
-        private Customer? customer = new Customer();
+        private Customer customer = new Customer();
 
         protected override async Task OnInitializedAsync()
         {
@@ -21,10 +21,14 @@ namespace ExtUnit5.Components.Pages.Customers
 
             if (CustomerId is not null)
             {
-                int.TryParse(CustomerId, out int customerId);
-                customer = await AppDbContext.Customers.FindAsync(customerId);
-                await base.OnInitializedAsync();
+                //int.TryParse(CustomerId, out int customerId);
+                var customer = await AppDbContext.Customers.FindAsync(CustomerId);
+                if (customer is not null)
+                    this.customer = customer;
+                else
+                    Console.WriteLine($"Customer with ID {CustomerId} was not found in database.");
             }
+            await base.OnInitializedAsync();
         }
 
         private void Submit()

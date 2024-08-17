@@ -1,6 +1,7 @@
 ﻿using ExtUnit5.Entities;
 using Microsoft.AspNetCore.Components;
 using System.Collections.Generic;
+using static Plotly.NET.StyleParam.BackOff;
 
 namespace ExtUnit5.Components
 {
@@ -12,10 +13,20 @@ namespace ExtUnit5.Components
         [Parameter] public EventCallback<int> OnPageChanged { get; set; }
 
         private int TotalItems => Items.Count;
-        private int TotalPages => TotalItems / PageSize;
-        private bool _isFirstPage => PageNumber == 1;
-        private bool _isLastPage => PageNumber == TotalPages;
+        private int TotalPages
+        {
+            get
+            {
+                var totalPages = (int)Math.Ceiling((double)TotalItems / PageSize);
 
+                if (totalPages < PageNumber)
+                    PageNumber = totalPages;
+                return totalPages;
+            }
+        }
+
+        private bool IsFirstPage => PageNumber == 1;
+        private bool IsLastPage => PageNumber == TotalPages;
         private IEnumerable<int> PageNumbers
         {
             get

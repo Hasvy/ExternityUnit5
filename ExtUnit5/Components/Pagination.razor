@@ -1,8 +1,8 @@
 ﻿@typeparam TItem
 
 <div class="d-flex flex-row justify-content-center">
-    <button class="btn btn-outline-primary" type="button" @onclick="@(() => ChangePage(1))" disabled="@_isFirstPage">First</button>
-    <button class="btn btn-outline-primary ms-2" type="button" @onclick="@(() => ChangePage(PageNumber - 1))" disabled="@_isFirstPage">Previous</button>
+    <button class="btn btn-outline-primary" type="button" @onclick="@(() => ChangePage(1))" disabled="@IsFirstPage">First</button>
+    <button class="btn btn-outline-primary ms-2" type="button" @onclick="@(() => ChangePage(PageNumber - 1))" disabled="@IsFirstPage">Previous</button>
 
     <div class="list-group list-group-horizontal mx-3">
         @foreach (var pageNum in PageNumbers)
@@ -11,6 +11,6 @@
         }
     </div>
 
-    <button class="btn btn-outline-primary" type="button" @onclick="@(() => ChangePage(PageNumber + 1))" disabled="@_isLastPage">Next</button>
-    <button class="btn btn-outline-primary ms-2" type="button" @onclick="@(() => ChangePage(TotalPages))" disabled="@_isLastPage">Last</button>
+    <button class="btn btn-outline-primary" type="button" @onclick="@(() => ChangePage(PageNumber + 1))" disabled="@IsLastPage">Next</button>
+    <button class="btn btn-outline-primary ms-2" type="button" @onclick="@(() => ChangePage(TotalPages))" disabled="@IsLastPage">Last</button>
 </div>

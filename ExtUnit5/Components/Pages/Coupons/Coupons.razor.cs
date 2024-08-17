@@ -43,6 +43,7 @@ namespace ExtUnit5.Components.Pages.Coupons
         public void Dispose()
         {
             AppDbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

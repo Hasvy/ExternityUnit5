@@ -1,10 +1,8 @@
 ﻿using Database;
 using ExtUnit5.Entities;
 using ExtUnit5.Services;
-using Mailhog;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Metadata.Ecma335;
 
 namespace ExtUnit5.Components.Pages.Coupons
 {
@@ -13,7 +11,6 @@ namespace ExtUnit5.Components.Pages.Coupons
         [Inject] IDbContextFactory<AppDbContext> DbContextFactory { get; set; } = null!;
         [Inject] NavigationManager NavigationManager { get; set; } = null!;
         [Inject] CodeGeneratorService CodeGenerator { get; set; } = null!;
-        [Inject] EmailService EmailService { get; set; } = null!;
         [Parameter] public string FormName { get; set; } = null!;
 
         public int? SelectedCustomerId
@@ -23,7 +20,8 @@ namespace ExtUnit5.Components.Pages.Coupons
             {
                 _selectedCustomerId = value;
                 coupon.Customer = AppDbContext.Customers.First(c => c.Id == _selectedCustomerId);
-                coupon.Discount = GetCouponDiscount();
+                if(!IsFixedAmount)
+                    coupon.Discount = GetCouponDiscount();
                 if (coupon.Product is not null)
                     coupon.PriceWithDiscount = GetPriceWithDiscount(coupon);
             }
@@ -53,13 +51,43 @@ namespace ExtUnit5.Components.Pages.Coupons
             }
         }
 
+        public bool IsFixedAmount
+        {
+            get => _isFixedAmount;
+            set
+            {
+                _isFixedAmount = value;
+                if (_isFixedAmount == false)
+                    coupon.Discount = GetCouponDiscount();
+                if (coupon.Product is not null)
+                {
+                    coupon.Discount = Discount;
+                    coupon.PriceWithDiscount = GetPriceWithDiscount(coupon);
+                }
+            }
+        }
+
+        public float Discount
+        {
+            get => _discount;
+            set
+            {
+                _discount = value;
+                coupon.Discount = _discount;
+                if (coupon.Product is not null)
+                    coupon.PriceWithDiscount = GetPriceWithDiscount(coupon);
+            }
+        }
+
         private AppDbContext AppDbContext { get; set; } = null!;
-        private Coupon coupon = new Coupon();
+        private readonly Coupon coupon = new Coupon();
         private List<string> couponCodes = new List<string>();
         private string errorMessage = string.Empty;
         private int? _selectedCustomerId;
         private int? _selectedProductId;
         private int _expireInDays = 1;
+        private bool _isFixedAmount = false;
+        private float _discount = 0;
 
         protected override async Task OnInitializedAsync()
         {
@@ -92,25 +120,34 @@ namespace ExtUnit5.Components.Pages.Coupons
 
         private float GetCouponDiscount()
         {
-            switch (coupon.Customer.CustomerGroup)
+            if (coupon.Customer is not null)
             {
-                case CustomerGroup.New:
-                    return 0.10f;
-                case CustomerGroup.Regular:
-                    return 0.20f;
-                case CustomerGroup.VIP:
-                    return 0.30f;
-                default:
-                    return 0.00f;
+                return coupon.Customer.CustomerGroup switch
+                {
+                    CustomerGroup.New => 0.10f,
+                    CustomerGroup.Regular => 0.20f,
+                    CustomerGroup.VIP => 0.30f,
+                    _ => 0.00f,
+                };
             }
+            else
+                return 0.00f;
         }
 
         private float GetPriceWithDiscount(Coupon coupon)
         {
-            return (float)Math.Round(coupon.Product.Price - (coupon.Product.Price * coupon.Discount), 2);
+            if (!IsFixedAmount)
+                return (float)Math.Round(coupon.Product.Price - (coupon.Product.Price * coupon.Discount), 2);
+            else
+            {
+                float priceWithDiscount = (float)Math.Round(coupon.Product.Price - coupon.Discount, 2);
+                if (priceWithDiscount < 1)
+                    Discount = coupon.Product.Price - 1;
+                return (float)Math.Round(coupon.Product.Price - coupon.Discount, 2);
+            }
         }
 
-        private async Task Submit()
+        private void Submit()
         {
             AppDbContext.Coupons.Add(coupon);
             AppDbContext.SaveChanges();
@@ -121,6 +158,7 @@ namespace ExtUnit5.Components.Pages.Coupons
         public void Dispose()
         {
             AppDbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -15,8 +15,8 @@ namespace ExtUnit5.Components.Pages.CategoryPages
 
         private List<Category> CategoriesOnPage => AllCategories.Skip((_currentPage - 1) * _itemsPerPage).Take(_itemsPerPage).ToList();
 
+        private readonly int _itemsPerPage = 10;
         private int _currentPage = 1;
-        private int _itemsPerPage = 10;
 
         protected override Task OnInitializedAsync()
         {
@@ -50,6 +50,7 @@ namespace ExtUnit5.Components.Pages.CategoryPages
         public void Dispose()
         {
             AppDbContext.Dispose();
+            GC.SuppressFinalize(this);
         }
     }
 }

@@ -8,6 +8,6 @@ namespace ExtUnit5.Components.Pages.ProductPages
 {
     public partial class ProductEdit : ComponentBase
     {
-        [Parameter] public string? ProductId { get; set; }
+        [Parameter] public int? ProductId { get; set; }
     }
 }
