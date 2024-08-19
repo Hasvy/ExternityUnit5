@@ -37,7 +37,12 @@ namespace ExtUnit5.Database
                 context.Orders.AddRange(_dataService.OrderList);
                 context.OrderItems.AddRange(_dataService.OrderItemsList);
                 context.SaveChanges();
+            }
+
+            using (var context = _dbContextFactory.CreateDbContext())
+            {
                 ActualizeCustomersGroups(context);
+                ActualizeProducts(context);
                 context.SaveChanges();
             }
         }
@@ -77,6 +82,19 @@ namespace ExtUnit5.Database
                     if (customer.RegistrationDate > DateTime.Today.AddMonths(-1))
                         customer.CustomerGroup = CustomerGroup.New;
                 }
+            }
+        }
+
+        private void ActualizeProducts(AppDbContext context)
+        {
+            foreach (var product in context.Products.ToList())
+            {
+                var productOrders = context.OrderItems.Where(oi => oi.Product == product);
+                int totalOrders = productOrders.Count();
+                DateTime firstMonthProductSold = productOrders.OrderBy(o => o.Order.OrderDate).First().Order.OrderDate;
+                int productAvailableInMonths = ((DateTime.Now.Year - firstMonthProductSold.Year) * 12) + DateTime.Now.Month - firstMonthProductSold.Month;
+
+                product.AverageOrdered = (float)totalOrders / productAvailableInMonths;
             }
         }
     }

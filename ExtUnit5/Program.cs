@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
+using ExtUnit5.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Configuration.AddJsonFile("appsettings.Local.json");
+builder.Configuration.AddJsonFile("appsettings.Local.json", true);
 
 builder.Services.AddDbContextFactory<AppDbContext>(options => options.UseLazyLoadingProxies()
     .UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -43,7 +45,26 @@ builder.Services.AddAuthorization();
 builder.Services.AddSingleton<EmailService>();
 builder.Services.AddSingleton<CodeGeneratorService>();
 builder.Services.AddSingleton<FakeDataService>();
+builder.Services.AddSingleton<AdjustProductsPricesJob>();
 builder.Services.AddScoped<AuthenticationStateProvider, AppAuthenticationStateProvider<IdentityUser>>();
+
+builder.Services.AddQuartz(q =>
+{
+    if (builder.Configuration.GetValue<bool>("BackgroundJobs:List:AdjustProductsPricesJob"))
+    {
+        var jobKey = nameof(AdjustProductsPricesJob);
+        q.AddJob<AdjustProductsPricesJob>(opts => opts.WithIdentity(jobKey));
+
+        q.AddTrigger(opts => opts
+            .ForJob(jobKey)
+            .WithSimpleSchedule(o => o
+                .RepeatForever()
+                .WithIntervalInMinutes(1))
+        );
+    }
+});
+
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 

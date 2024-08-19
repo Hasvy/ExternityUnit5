@@ -20,7 +20,10 @@ namespace ExtUnit5.Components
                 var totalPages = (int)Math.Ceiling((double)TotalItems / PageSize);
 
                 if (totalPages < PageNumber)
+                {
                     PageNumber = totalPages;
+                    OnPageChanged.InvokeAsync(PageNumber);
+                }
                 return totalPages;
             }
         }

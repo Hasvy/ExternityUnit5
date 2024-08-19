@@ -3,6 +3,8 @@ using ExtUnit5.Entities;
 using ExtUnit5.Entities.Grouping;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Plotly.Blazor.Traces;
+using Plotly.Blazor;
 using Plotly.NET;
 
 namespace ExtUnit5.Components.Pages
@@ -20,10 +22,12 @@ namespace ExtUnit5.Components.Pages
         private int newCustomersCount;
         private int regularCustomersCount;
         private int vipCustomersCount;
-        private List<string> popularProducts = new List<string>();
-        private List<string> neutralProducts = new List<string>();
-        private List<string> unpopularProducts = new List<string>();
         private bool _isLoading;
+
+        Plotly.Blazor.Config config;
+        Plotly.Blazor.Layout layout;
+        IList<ITrace> data;
+
         protected override async Task OnInitializedAsync()
         {
             _isLoading = true;
@@ -44,31 +48,46 @@ namespace ExtUnit5.Components.Pages
 
         #region Charts
 
-        private MarkupString GetOrdersChart()
+        private void GetOrdersChart()
         {
             var monthlyGroupedOrders = Orders
-                .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
-                    .Select(dg => new MonthlyOrder
-                    {
-                        Month = new DateTime(dg.Key.Year, dg.Key.Month, 1),
-                        OrderCount = dg.Count()
-                    })
-                .OrderBy(o => o.Month)
-                .ToList();
+            .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
+                .Select(dg => new MonthlyOrder
+                {
+                    Month = new DateTime(dg.Key.Year, dg.Key.Month, 1),
+                    OrderCount = dg.Count()
+                })
+            .OrderBy(o => o.Month)
+            .ToList();
 
             var avgOrders = (float)monthlyGroupedOrders.Average(o => o.OrderCount);
             avgOrdersValue = (float)Math.Round(avgOrders);
 
-            var genericChart = Chart2D.Chart.SplineArea<DateTime, int, string>(
-                y: monthlyGroupedOrders.Select(g => g.OrderCount),
-                x: monthlyGroupedOrders.Select(g => g.Month)
-                )
-                .WithSize(800, 400)
-                .WithTraceInfo("Orders Count", ShowLegend: false)
-                .WithXAxisStyle(title: Title.init("Month"))
-                .WithYAxisStyle(title: Title.init("Orders Count"));
+            config = new Plotly.Blazor.Config();
+            layout = new Plotly.Blazor.Layout();
 
-            return (MarkupString)GenericChart.toChartHTML(genericChart);
+            data = new List<ITrace>
+            {
+                //TODO Fix Charts
+                new Plotly.Blazor.Traces.Scatter
+                {
+                    Name = "ScatterTrace",
+                    //Mode = ModeFlag.Lines,
+                    X = (IList<object>)monthlyGroupedOrders.Select(g => g.Month),
+                    Y = (IList<object>)monthlyGroupedOrders.Select(g => g.OrderCount)
+                }
+            };
+
+            //var genericChart = Chart2D.Chart.SplineArea<DateTime, int, string>(
+            //    y: monthlyGroupedOrders.Select(g => g.OrderCount),
+            //    x: monthlyGroupedOrders.Select(g => g.Month)
+            //    )
+            //    .WithSize(800, 400)
+            //    .WithTraceInfo("Orders Count", ShowLegend: false)
+            //    .WithXAxisStyle(title: Title.init("Month"))
+            //    .WithYAxisStyle(title: Title.init("Orders Count"));
+
+            //return (MarkupString)GenericChart.toChartHTML(genericChart);
         }
 
         private MarkupString GetProductTrendsChart()
@@ -93,7 +112,7 @@ namespace ExtUnit5.Components.Pages
                 .OrderByDescending(g => g.DatesOrdered.Count)
                 .ToList();
 
-            GroupProductsByPopularity(groupedProducts);
+            //GroupProductsByPopularity(groupedProducts);
 
             List<GenericChart> charts = new List<GenericChart>();
 
@@ -171,25 +190,31 @@ namespace ExtUnit5.Components.Pages
             return AppDbContext.Customers.Where(c => c.CustomerGroup == CustomerGroup.VIP).Count();
         }
 
+        private float GetPopularityDiff(float popularity)
+        {
+            return (float)Math.Round((popularity - 1) * 100, 2);
+        }
+
         #endregion
 
-        private void GroupProductsByPopularity(List<GroupedProduct> groupedProducts)
-        {
-            foreach (var product in groupedProducts)
-            {
-                if (product.DatesOrdered.Count >= 2)
-                {
-                    var currMonth = product.DatesOrdered[product.DatesOrdered.Count - 1];
-                    var lastMonth = product.DatesOrdered[product.DatesOrdered.Count - 2];
-                    var orderDiff = currMonth.OrderCount - lastMonth.OrderCount;
-                    if (orderDiff > 0)
-                        popularProducts.Add(product.ProductName);
-                    else if (orderDiff == 0)
-                        neutralProducts.Add(product.ProductName);
-                    else
-                        unpopularProducts.Add(product.ProductName);
-                }
-            }
-        }
+        //private void GroupProductsByPopularity(List<GroupedProduct> groupedProducts)
+        //{
+        //    foreach (var product in groupedProducts)
+        //    {
+        //        if (product.DatesOrdered.Count >= 2)
+        //        {
+        //            var orderedInCurrMonth = product.DatesOrdered[product.DatesOrdered.Count - 1];
+        //            var orderedInLastMonth = product.DatesOrdered[product.DatesOrdered.Count - 2];
+        //            var diffOrdersCount = orderedInCurrMonth.OrderCount - orderedInLastMonth.OrderCount;
+
+        //            if (diffOrdersCount > 0)
+        //                popularProducts.Add(product.ProductName);
+        //            else if (diffOrdersCount == 0)
+        //                neutralProducts.Add(product.ProductName);
+        //            else
+        //                unpopularProducts.Add(product.ProductName);
+        //        }
+        //    }
+        //}
     }
 }

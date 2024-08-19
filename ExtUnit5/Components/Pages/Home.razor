@@ -1,4 +1,6 @@
-﻿@page "/"
+﻿@using Plotly.Blazor;
+
+@page "/"
 @rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
@@ -13,7 +15,8 @@
                 <h3 class="m-0 ms-2">Graf objednávek</h3>
             </div>
             <div class="border embed-responsive embed-responsive-21by9">
-                @GetOrdersChart()
+                @* <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" /> *@
+@*                 @GetOrdersChart() *@
             </div>
         </div>
         <div class="col-4 p-0 chart-wrap upper-blocks" style="border-bottom-width: 2px">
@@ -59,7 +62,7 @@
                 <h3 class="m-0 ms-2">Graf nových zákazníků za měsíc</h3>
             </div>
             <div class="border embed-responsive embed-responsive-21by9">
-                @GetNewCustomersChart()
+@*                 @GetNewCustomersChart() *@
             </div>
         </div>
     </div>
@@ -69,21 +72,26 @@
             <h3>Produktové trendy</h3>
         </div>
         <div class="col-8">
-            @GetProductTrendsChart()
+@*             @GetProductTrendsChart() *@
         </div>
         <div class="col-4 card d-flex flex-row">
             <div class="flex-fill">
                 <table class="table table-hover table-bordered">
-                    <thead class="bg-opacity-50" style="background-color: lawngreen">
+                    <thead>
                         <tr>
                             <th scope="row">populární</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in popularProducts)
+                        @foreach (var item in AppDbContext.Products.Where(p => p.Popularity > 1.1f).ToList())
                         {
                         <tr>
-                            <td>@item</td>
+                            <td>
+                                @item
+                                <span class="text-success">
+                                    @(" " + GetPopularityDiff(item.Popularity) + "%")
+                                </span>
+                            </td>
                         </tr>
                         }
                     </tbody>
@@ -91,16 +99,21 @@
             </div>
             <div class="flex-fill">
                 <table class="table table-hover table-bordered">
-                    <thead class="bg-opacity-50" style="background-color: yellow">
+                    <thead>
                         <tr>
                             <th scope="row">neutrální</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in neutralProducts)
+                        @foreach (var item in AppDbContext.Products.Where(p => 0.9f < p.Popularity && p.Popularity < 1.1f).ToList())
                         {
                             <tr>
-                                <td>@item</td>
+                                <td>
+                                    @item
+                                    <span>
+                                        @(" " + GetPopularityDiff(item.Popularity) + "%")
+                                    </span>
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -108,16 +121,21 @@
             </div>
             <div class="flex-fill">
                 <table class="table table-hover table-bordered">
-                    <thead class="bg-opacity-50" style="background-color: red">
+                    <thead>
                         <tr>
                             <th scope="row">nepopulární</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in unpopularProducts)
+                        @foreach (var item in AppDbContext.Products.Where(p => p.Popularity < 0.9f).ToList())
                         {
                             <tr>
-                                <td>@item</td>
+                                <td>
+                                    @item
+                                    <span class="text-danger">
+                                        @(" " + GetPopularityDiff(item.Popularity) + "%")
+                                    </span>
+                                </td>
                             </tr>
                         }
                     </tbody>

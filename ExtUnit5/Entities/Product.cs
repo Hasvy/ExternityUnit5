@@ -31,6 +31,10 @@ namespace ExtUnit5.Entities
         [NotMapped]
         public bool IsActive => Stock > 0;
 
+        public float AverageOrdered { get; set; }       //Per month
+
+        public float Popularity { get; set; } = 1;
+
         public override string ToString()
         {
             return Name;
