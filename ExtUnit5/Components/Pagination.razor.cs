@@ -34,12 +34,12 @@ namespace ExtUnit5.Components
         {
             get
             {
-                int startPage = Math.Max(1, PageNumber - 5);        //Centered
-                int endPage = Math.Min(TotalPages, startPage + 9);
+                int startPage = Math.Max(1, PageNumber - 4);        //Centered
+                int endPage = Math.Min(TotalPages, startPage + 8);
 
-                if (endPage == TotalPages && endPage - startPage < 9)
+                if (endPage == TotalPages && endPage - startPage < 8)
                 {
-                    startPage = Math.Max(1, endPage - 9);
+                    startPage = Math.Max(1, endPage - 8);
                 }
 
                 return Enumerable.Range(startPage, endPage - startPage + 1);

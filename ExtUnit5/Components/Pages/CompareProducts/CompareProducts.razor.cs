@@ -2,7 +2,6 @@
 using ExtUnit5.Entities;
 using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
-using System.Runtime.Intrinsics.X86;
 
 namespace ExtUnit5.Components.Pages.CompareProducts
 {

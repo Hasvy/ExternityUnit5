@@ -10,22 +10,19 @@
 @if (!_isLoading)
 {
     <div class="row">
-        <div class="col-8 p-0 chart-wrap upper-blocks" style="border-bottom-width: 2px">
+        <div class="col-8 p-0 border border-2">
             <div class="bg-info rounded-3">
                 <h3 class="m-0 ms-2">Graf objednávek</h3>
             </div>
-            <div class="border embed-responsive embed-responsive-21by9">
-                @* <PlotlyChart @bind-Config="config" @bind-Layout="layout" @bind-Data="data" /> *@
-@*                 @GetOrdersChart() *@
+            <div>
+                <PlotlyChart @bind-Config="ordersChartConfig" @bind-Layout="ordersChartLayout" @bind-Data="ordersChartData" />
             </div>
         </div>
-        <div class="col-4 p-0 chart-wrap upper-blocks" style="border-bottom-width: 2px">
+        <div class="col-4 p-0 border-top border-bottom border-end border-2">
             <div class="bg-warning rounded-3">
                 <h3 class="m-0 ms-2">Metriky</h3>
             </div>
-            <table class="table table-hover table-bordered" style="margin-top: 100px">
-                <thead>
-                </thead>
+            <table class="table table-hover table-bordered">
                 <tbody>
                     <tr>
                         <th scope="row">průměrný počet objednávek za měsíc</th>
@@ -57,22 +54,24 @@
     </div>
 
     <div class="row">
-        <div class="col-12 p-0 chart-wrap upper-blocks, bottom-blocks" style="border-bottom-width: 2px">
+        <div class="col-12 p-0 border-start border-bottom border-end border-2">
             <div class="bg-info rounded-3">
-                <h3 class="m-0 ms-2">Graf nových zákazníků za měsíc</h3>
+                <h3 class="m-0 ms-2">Produktové trendy</h3>
             </div>
-            <div class="border embed-responsive embed-responsive-21by9">
-@*                 @GetNewCustomersChart() *@
+            <div>
+                <PlotlyChart @bind-Config="productTrendsConfig" @bind-Layout="productTrendsLayout" @bind-Data="productTrendsData" />
             </div>
         </div>
     </div>
 
-    <div class="row p-0 chart-wrap bottom-blocks">
-        <div class="bg-info rounded-3">
-            <h3>Produktové trendy</h3>
-        </div>
-        <div class="col-8">
-@*             @GetProductTrendsChart() *@
+    <div class="row">
+        <div class="col-8 p-0 border border-2">
+            <div class="bg-info rounded-3">
+                <h3>Graf nových zákazníků za měsíc</h3>
+            </div>
+            <div>
+                <PlotlyChart @bind-Config="newCustomersConfig" @bind-Layout="newCustomersLayout" @bind-Data="newCustomersData" />
+            </div>
         </div>
         <div class="col-4 card d-flex flex-row">
             <div class="flex-fill">

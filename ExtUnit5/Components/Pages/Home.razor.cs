@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
 using Plotly.Blazor.Traces;
 using Plotly.Blazor;
-using Plotly.NET;
+using Plotly.Blazor.Traces.ScatterLib;
+using Line = Plotly.Blazor.Traces.ScatterLib.Line;
+using Plotly.Blazor.Traces.ScatterLib.LineLib;
 
 namespace ExtUnit5.Components.Pages
 {
@@ -24,9 +26,17 @@ namespace ExtUnit5.Components.Pages
         private int vipCustomersCount;
         private bool _isLoading;
 
-        Plotly.Blazor.Config config;
-        Plotly.Blazor.Layout layout;
-        IList<ITrace> data;
+        private Plotly.Blazor.Config? ordersChartConfig;
+        private Plotly.Blazor.Layout? ordersChartLayout;
+        private IList<ITrace>? ordersChartData;
+
+        private Plotly.Blazor.Config? newCustomersConfig;
+        private Plotly.Blazor.Layout? newCustomersLayout;
+        private IList<ITrace>? newCustomersData;
+
+        private Plotly.Blazor.Config? productTrendsConfig;
+        private Plotly.Blazor.Layout? productTrendsLayout;
+        private IList<ITrace>? productTrendsData;
 
         protected override async Task OnInitializedAsync()
         {
@@ -35,6 +45,10 @@ namespace ExtUnit5.Components.Pages
 
             Orders = AppDbContext.Orders.ToList();
             Customers = AppDbContext.Customers.ToList();
+
+            CreateOrdersChart();
+            CreateProductTrendsChart();
+            CreateNewCustomersChart();
 
             totalOrdersCount = GetTotalOrdersCount();
             meanOrdersAmount = GetMeanOrdersAmount();
@@ -48,7 +62,7 @@ namespace ExtUnit5.Components.Pages
 
         #region Charts
 
-        private void GetOrdersChart()
+        private void CreateOrdersChart()
         {
             var monthlyGroupedOrders = Orders
             .GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month })
@@ -63,21 +77,22 @@ namespace ExtUnit5.Components.Pages
             var avgOrders = (float)monthlyGroupedOrders.Average(o => o.OrderCount);
             avgOrdersValue = (float)Math.Round(avgOrders);
 
-            config = new Plotly.Blazor.Config();
-            layout = new Plotly.Blazor.Layout();
-
-            data = new List<ITrace>
+            ordersChartConfig = new Plotly.Blazor.Config();
+            ordersChartLayout = new Plotly.Blazor.Layout();
+            ordersChartData = new List<ITrace>
             {
-                //TODO Fix Charts
-                new Plotly.Blazor.Traces.Scatter
+                new Scatter
                 {
-                    Name = "ScatterTrace",
-                    //Mode = ModeFlag.Lines,
-                    X = (IList<object>)monthlyGroupedOrders.Select(g => g.Month),
-                    Y = (IList<object>)monthlyGroupedOrders.Select(g => g.OrderCount)
+                    Name = "Orders Count",
+                    Mode = ModeFlag.Lines | ModeFlag.Markers,
+                    X = monthlyGroupedOrders.Select(g => (object)g.Month).ToList(),
+                    Y = monthlyGroupedOrders.Select(g => (object)g.OrderCount).ToList(),
+                    Line = new Line { Shape = ShapeEnum.Spline },
+                    Fill = FillEnum.ToZeroY
                 }
             };
 
+            #region Plotly.Net Orders Chart
             //var genericChart = Chart2D.Chart.SplineArea<DateTime, int, string>(
             //    y: monthlyGroupedOrders.Select(g => g.OrderCount),
             //    x: monthlyGroupedOrders.Select(g => g.Month)
@@ -88,9 +103,10 @@ namespace ExtUnit5.Components.Pages
             //    .WithYAxisStyle(title: Title.init("Orders Count"));
 
             //return (MarkupString)GenericChart.toChartHTML(genericChart);
+            #endregion
         }
 
-        private MarkupString GetProductTrendsChart()
+        private void CreateProductTrendsChart()
         {
             var orderItems = AppDbContext.OrderItems.ToList();
             var groupedProducts = orderItems
@@ -112,28 +128,45 @@ namespace ExtUnit5.Components.Pages
                 .OrderByDescending(g => g.DatesOrdered.Count)
                 .ToList();
 
-            //GroupProductsByPopularity(groupedProducts);
-
-            List<GenericChart> charts = new List<GenericChart>();
+            productTrendsConfig = new Plotly.Blazor.Config();
+            productTrendsLayout = new Plotly.Blazor.Layout();
+            productTrendsData = new List<ITrace>();
 
             foreach (var productData in groupedProducts)
             {
-                charts.Add(Chart2D.Chart.Spline<DateTime, int, string>(
-                    x: productData.DatesOrdered.Select(d => d.Month),
-                    y: productData.DatesOrdered.Select(d => d.OrderCount),
-                    Name: productData.ProductName ?? "Product " + productData.ProductId.ToString()
-                    ));
+                productTrendsData.Add(new Scatter
+                {
+                    Name = productData.ProductName ?? "Product " + productData.ProductId,
+                    X = productData.DatesOrdered.Select(d => (object)d.Month).ToList(),
+                    Y = productData.DatesOrdered.Select(d => (object)d.OrderCount).ToList(),
+                    Mode = ModeFlag.Lines | ModeFlag.Markers,
+                    Line = new Line { Shape = ShapeEnum.Spline }
+                });
             }
 
-            var combinedChart = Chart.Combine(charts)
-                .WithSize(800, 400)
-                .WithXAxisStyle(title: Title.init("Date"))
-                .WithYAxisStyle(title: Title.init("Order Count"));
+            #region Plotly.Net Product Trends Chart
 
-            return (MarkupString)GenericChart.toChartHTML(combinedChart);
+            //List<GenericChart> charts = new List<GenericChart>();
+
+            //foreach (var productData in groupedProducts)
+            //{
+            //    charts.Add(Chart2D.Chart.Spline<DateTime, int, string>(
+            //        x: productData.DatesOrdered.Select(d => d.Month),
+            //        y: productData.DatesOrdered.Select(d => d.OrderCount),
+            //        Name: productData.ProductName ?? "Product " + productData.ProductId.ToString()
+            //        ));
+            //}
+
+            //var combinedChart = Chart.Combine(charts)
+            //    .WithSize(800, 400)
+            //    .WithXAxisStyle(title: Title.init("Date"))
+            //    .WithYAxisStyle(title: Title.init("Order Count"));
+
+            //return (MarkupString)GenericChart.toChartHTML(combinedChart);
+            #endregion
         }
 
-        private MarkupString GetNewCustomersChart()
+        private void CreateNewCustomersChart()
         {
             var monthlyGroupedCustomers = Customers
                 .GroupBy(c => new { c.RegistrationDate.Year, c.RegistrationDate.Month })
@@ -147,16 +180,33 @@ namespace ExtUnit5.Components.Pages
 
             var newCustomersForYear = monthlyGroupedCustomers.Where(g => g.Month > DateTime.Today.AddMonths(-12));
 
-            var newCustomersChart = Chart2D.Chart.Column<int, DateTime, string, string, string> (
-                    Keys: newCustomersForYear.Select(g => g.Month).ToList(),
-                    values: monthlyGroupedCustomers.Select(g => g.CustomersCount)
-                )
-                .WithSize(1200, 400)
-                .WithTraceInfo("Customers Count", ShowLegend: false)
-                .WithXAxisStyle(title: Title.init("Month"))
-                .WithYAxisStyle(title: Title.init("Customers Count"));
+            newCustomersConfig = new Plotly.Blazor.Config();
+            newCustomersLayout = new Plotly.Blazor.Layout();
+            newCustomersData = new List<ITrace>
+            {
+                new Scatter
+                {
+                    Name = "Customers Count",
+                    Mode = ModeFlag.Lines | ModeFlag.Markers,
+                    X = newCustomersForYear.Select(g => (object)g.Month).ToList(),
+                    Y = newCustomersForYear.Select(g => (object)g.CustomersCount).ToList(),
+                    Line = new Line { Shape = ShapeEnum.Spline },
+                    Fill = FillEnum.ToZeroY
+                }
+            };
 
-            return (MarkupString)GenericChart.toChartHTML(newCustomersChart);
+            #region Plotly.Net New Customers Chart
+            //var newCustomersChart = Chart2D.Chart.Column<int, DateTime, string, string, string> (
+            //        Keys: newCustomersForYear.Select(g => g.Month).ToList(),
+            //        values: monthlyGroupedCustomers.Select(g => g.CustomersCount)
+            //    )
+            //    .WithSize(1200, 400)
+            //    .WithTraceInfo("Customers Count", ShowLegend: false)
+            //    .WithXAxisStyle(title: Title.init("Month"))
+            //    .WithYAxisStyle(title: Title.init("Customers Count"));
+
+            //return (MarkupString)GenericChart.toChartHTML(newCustomersChart);
+            #endregion
         }
 
         #endregion
@@ -196,25 +246,5 @@ namespace ExtUnit5.Components.Pages
         }
 
         #endregion
-
-        //private void GroupProductsByPopularity(List<GroupedProduct> groupedProducts)
-        //{
-        //    foreach (var product in groupedProducts)
-        //    {
-        //        if (product.DatesOrdered.Count >= 2)
-        //        {
-        //            var orderedInCurrMonth = product.DatesOrdered[product.DatesOrdered.Count - 1];
-        //            var orderedInLastMonth = product.DatesOrdered[product.DatesOrdered.Count - 2];
-        //            var diffOrdersCount = orderedInCurrMonth.OrderCount - orderedInLastMonth.OrderCount;
-
-        //            if (diffOrdersCount > 0)
-        //                popularProducts.Add(product.ProductName);
-        //            else if (diffOrdersCount == 0)
-        //                neutralProducts.Add(product.ProductName);
-        //            else
-        //                unpopularProducts.Add(product.ProductName);
-        //        }
-        //    }
-        //}
     }
 }
