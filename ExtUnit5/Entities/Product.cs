@@ -33,11 +33,45 @@ namespace ExtUnit5.Entities
 
         public float AverageOrdered { get; set; }       //Per month
 
-        public float Popularity { get; set; } = 1;
+        public float Popularity
+        {
+            get => _popularity;
+            set
+            {
+                _popularity = value;
+                SetPopularityGroup();
+            }
+        }
 
+        public float? LastPopularityAffectedPrice { get; set; } = null;
+
+        public Group PopularityGroup { get; set; }
+
+
+        //Variables
+        private float _popularity = 1;
+
+        //Methods
         public override string ToString()
         {
             return Name;
+        }
+
+        private void SetPopularityGroup()
+        {
+            if (Popularity > 1.1f)
+                PopularityGroup = Group.Popular;
+            else if (Popularity < 0.9f)
+                PopularityGroup = Group.Unpopular;
+            else
+                PopularityGroup = Group.Neutral;
+        }
+
+        public enum Group
+        {
+            Popular,
+            Neutral,
+            Unpopular
         }
     }
 }

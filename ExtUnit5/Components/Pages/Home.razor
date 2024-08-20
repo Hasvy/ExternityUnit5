@@ -83,7 +83,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in AppDbContext.Products.Where(p => p.Popularity > 1.1f).ToList())
+                        @foreach (var item in AppDbContext.Products.Where(p => p.PopularityGroup == Entities.Product.Group.Popular).ToList())
                         {
                         <tr>
                             <td>
@@ -105,7 +105,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in AppDbContext.Products.Where(p => 0.9f < p.Popularity && p.Popularity < 1.1f).ToList())
+                        @foreach (var item in AppDbContext.Products.Where(p => p.PopularityGroup == Entities.Product.Group.Neutral).ToList())
                         {
                             <tr>
                                 <td>
@@ -127,7 +127,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var item in AppDbContext.Products.Where(p => p.Popularity < 0.9f).ToList())
+                        @foreach (var item in AppDbContext.Products.Where(p => p.PopularityGroup == Entities.Product.Group.Unpopular).ToList())
                         {
                             <tr>
                                 <td>

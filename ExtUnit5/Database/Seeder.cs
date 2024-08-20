@@ -85,7 +85,7 @@ namespace ExtUnit5.Database
             }
         }
 
-        private void ActualizeProducts(AppDbContext context)
+        private void ActualizeProducts(AppDbContext context)        //Also would be performed after order is finished
         {
             foreach (var product in context.Products.ToList())
             {
@@ -95,6 +95,16 @@ namespace ExtUnit5.Database
                 int productAvailableInMonths = ((DateTime.Now.Year - firstMonthProductSold.Year) * 12) + DateTime.Now.Month - firstMonthProductSold.Month;
 
                 product.AverageOrdered = (float)totalOrders / productAvailableInMonths;
+
+                int orderedThisMonth = productOrders.Where(
+                    oi => oi.Product == product &&
+                    oi.Order.OrderDate.Year == DateTime.Now.Year &&
+                    oi.Order.OrderDate.Month == DateTime.Now.Month)
+                    .Count();
+
+                float shouldBeOrderedPerDay = product.AverageOrdered / DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month);
+
+                product.Popularity = orderedThisMonth / (shouldBeOrderedPerDay * DateTime.Now.Day);
             }
         }
     }
