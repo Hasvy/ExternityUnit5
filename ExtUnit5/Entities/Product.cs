@@ -47,7 +47,6 @@ namespace ExtUnit5.Entities
 
         public Group PopularityGroup { get; set; }
 
-
         //Variables
         private float _popularity = 1;
 

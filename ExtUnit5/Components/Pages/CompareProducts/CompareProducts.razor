@@ -1,3 +1,111 @@
 ﻿@page "/compare-products"
 
 <h3>CompareProducts</h3>
+
+<div class="container w-100">
+    <div class="row">
+        <div class="col-2">
+            <table class="table table-hover table-bordered">
+                <tbody>
+                    @foreach (var product in AppDbContext.Products.ToList())
+                    {
+                        <tr>
+                            <td class="@(product == LeftProduct ? "table-active" : "")"
+                                @onclick="@(() => SetLeftProduct(product))">
+                                @product.Name
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="col-8 row d-flex align-content-center">
+            <div class="col-5 pe-0">
+                @if (LeftProduct is not null)
+                {
+                    <h3>@LeftProduct</h3>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Cena</th>
+                                <td class="@(PriceDiff >= 0 ? "text-success" : "text-danger")">@(Math.Round(LeftProduct.Price, 2))</td>
+                            </tr>
+                            <tr data-toggle="tooltip" data-placement="bottom" title="Kolikrát v průměru byl produkt objednán v předchozích měsících.">
+                                <th>Objednáno v prům. za měsíc</th>
+                                <td class="@(AverageOrderedDiff >= 0 ? "text-success" : "text-danger")">@(Math.Round(LeftProduct.AverageOrdered, 2))</td>
+                            </tr>
+                            <tr data-toggle="tooltip" data-placement="bottom" title="Popularita produktu v aktuálním měsíci, vypočítaná na základě průměrných objednávek.">
+                                <th>Popularita</th>
+                                <td class="@(PopularityDiff >= 0 ? "text-success" : "text-danger")">@(Math.Round(LeftProduct.Popularity, 2))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <h4>&larr; Select a product</h4>
+                }
+            </div>
+            <div class="col-2 px-0">
+                @if (LeftProduct is not null && RightProduct is not null)
+                {
+                    <h3>Difference</h3>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="d-flex justify-content-center">@PriceDiff</td>
+                            </tr>
+                            <tr>
+                                <td class="d-flex justify-content-center">@AverageOrderedDiff</td>
+                            </tr>
+                            <tr>
+                                <td class="d-flex justify-content-center">@PopularityDiff</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+            </div>
+            <div class="col-5 ps-0">
+                @if (RightProduct is not null)
+                {
+                    <h3 class="d-flex justify-content-end">@RightProduct</h3>
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <td class="@(PriceDiff <= 0 ? "text-success" : "text-danger")">@(Math.Round(RightProduct.Price, 2))</td>
+                                <th>Cena</th>
+                            </tr>
+                            <tr data-toggle="tooltip" data-placement="bottom" title="Kolikrát v průměru byl produkt objednán v předchozích měsících.">
+                                <td class="@(AverageOrderedDiff <= 0 ? "text-success" : "text-danger")">@(Math.Round(RightProduct.AverageOrdered, 2))</td>
+                                <th>Objednáno v prům. za měsíc</th>
+                            </tr>
+                            <tr data-toggle="tooltip" data-placement="bottom" title="Popularita produktu v aktuálním měsíci, vypočítaná na základě průměrných objednávek.">
+                                <td class="@(PopularityDiff <= 0 ? "text-success" : "text-danger")">@(Math.Round(RightProduct.Popularity, 2))</td>
+                                <th>Popularita</th>
+                            </tr>
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <h4 class="d-flex justify-content-end">Select a product &rarr;</h4>
+                }
+            </div>
+        </div>
+        <div class="col-2 px-0">
+            <table class="table table-hover table-bordered">
+                <tbody>
+                    @foreach (var product in AppDbContext.Products.ToList())
+                    {
+                        <tr>
+                            <td class="@(product == RightProduct ? "table-active" : "")"
+                                @onclick="@(() => SetRightProduct(product))">
+                                @product.Name
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

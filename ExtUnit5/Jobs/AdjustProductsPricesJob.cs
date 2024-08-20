@@ -31,6 +31,7 @@ namespace ExtUnit5.Jobs
                 if (product.PopularityGroup is Product.Group.Popular && product.Popularity != product.LastPopularityAffectedPrice)
                 {
                     product.Price += (product.Popularity - 1) * priceChangeProportion * product.Price;
+                    product.Price = (float)Math.Round(product.Price, 2);
                     product.LastPopularityAffectedPrice = product.Popularity;
                     //Some actions only for popular products
                 }
@@ -46,6 +47,7 @@ namespace ExtUnit5.Jobs
                     else
                     {
                         product.Price += (product.Popularity - 1) * priceChangeProportion * product.Price;
+                        product.Price = (float)Math.Round(product.Price, 2);
                     }
                     product.LastPopularityAffectedPrice = product.Popularity;
                     //Porbably a notification that product is cheaper now or something only for the unpopular products
